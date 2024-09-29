@@ -307,7 +307,7 @@ func checkAuthErr(resp *http.Response, apiErr s3err.APIError) error {
 	return nil
 }
 
-func checkApiErr(err error, apiErr s3err.APIError) error {
+func checkAPIErr(err error, apiErr s3err.APIError) error {
 	if err == nil {
 		return fmt.Errorf("expected %v, instead got nil", apiErr.Code)
 	}
@@ -327,7 +327,7 @@ func checkApiErr(err error, apiErr s3err.APIError) error {
 	return fmt.Errorf("expected aws api error, instead got: %w", err)
 }
 
-func checkSdkApiErr(err error, code string) error {
+func checkSdkAPIErr(err error, code string) error {
 	var ae smithy.APIError
 	if errors.As(err, &ae) {
 		if ae.ErrorCode() != code {
@@ -707,7 +707,7 @@ func compareDelObjects(list1, list2 []types.DeletedObject) bool {
 	return true
 }
 
-func uploadParts(client *s3.Client, size, partCount int, bucket, key, uploadId string) (parts []types.Part, err error) {
+func uploadParts(client *s3.Client, size, partCount int, bucket, key, uploadID string) (parts []types.Part, err error) {
 	dr := NewDataReader(size, size)
 	datafile := "rand.data"
 	w, err := os.Create(datafile)
@@ -745,7 +745,7 @@ func uploadParts(client *s3.Client, size, partCount int, bucket, key, uploadId s
 		out, err := client.UploadPart(ctx, &s3.UploadPartInput{
 			Bucket:     &bucket,
 			Key:        &key,
-			UploadId:   &uploadId,
+			UploadId:   &uploadID,
 			Body:       bytes.NewReader(partBuffer),
 			PartNumber: &pn,
 		})
@@ -907,7 +907,7 @@ func checkWORMProtection(client *s3.Client, bucket, object string) error {
 		Key:    &object,
 	})
 	cancel()
-	if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrObjectLocked)); err != nil {
+	if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrObjectLocked)); err != nil {
 		return err
 	}
 
@@ -917,7 +917,7 @@ func checkWORMProtection(client *s3.Client, bucket, object string) error {
 		Key:    &object,
 	})
 	cancel()
-	if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrObjectLocked)); err != nil {
+	if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrObjectLocked)); err != nil {
 		return err
 	}
 
@@ -933,7 +933,7 @@ func checkWORMProtection(client *s3.Client, bucket, object string) error {
 		},
 	})
 	cancel()
-	if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrObjectLocked)); err != nil {
+	if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrObjectLocked)); err != nil {
 		return err
 	}
 

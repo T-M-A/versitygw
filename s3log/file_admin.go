@@ -79,7 +79,7 @@ func (f *AdminFileLogger) Log(ctx *fiber.Ctx, err error, body []byte, meta LogMe
 	lf.RequestID = genID()
 	lf.Operation = meta.Action
 	lf.RequestURI = reqURI
-	lf.HttpStatus = meta.HttpStatus
+	lf.HTTPStatus = meta.HTTPStatus
 	lf.ErrorCode = errorCode
 	lf.BytesSent = len(body)
 	lf.TotalTime = time.Since(startTime).Milliseconds()
@@ -128,7 +128,7 @@ func (f *AdminFileLogger) writeLog(lf AdminLogFields) {
 		lf.RequestID,
 		lf.Operation,
 		lf.RequestURI,
-		lf.HttpStatus,
+		lf.HTTPStatus,
 		lf.ErrorCode,
 		lf.BytesSent,
 		lf.TotalTime,

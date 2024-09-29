@@ -215,19 +215,19 @@ func createUser(ctx *cli.Context) error {
 		GroupID: groupID,
 	}
 
-	accJson, err := json.Marshal(acc)
+	accJSON, err := json.Marshal(acc)
 	if err != nil {
 		return fmt.Errorf("failed to parse user data: %w", err)
 	}
 
-	req, err := http.NewRequest(http.MethodPatch, fmt.Sprintf("%v/create-user", adminEndpoint), bytes.NewBuffer(accJson))
+	req, err := http.NewRequest(http.MethodPatch, fmt.Sprintf("%v/create-user", adminEndpoint), bytes.NewBuffer(accJSON))
 	if err != nil {
 		return fmt.Errorf("failed to send the request: %w", err)
 	}
 
 	signer := v4.NewSigner()
 
-	hashedPayload := sha256.Sum256(accJson)
+	hashedPayload := sha256.Sum256(accJSON)
 	hexPayload := hex.EncodeToString(hashedPayload[:])
 
 	req.Header.Set("X-Amz-Content-Sha256", hexPayload)
@@ -305,16 +305,16 @@ func deleteUser(ctx *cli.Context) error {
 }
 
 func updateUser(ctx *cli.Context) error {
-	access, secret, userId, groupId := ctx.String("access"), ctx.String("secret"), ctx.Int("user-id"), ctx.Int("group-id")
+	access, secret, userID, groupID := ctx.String("access"), ctx.String("secret"), ctx.Int("user-id"), ctx.Int("group-id")
 	props := auth.MutableProps{}
 	if ctx.IsSet("secret") {
 		props.Secret = &secret
 	}
 	if ctx.IsSet("user-id") {
-		props.UserID = &userId
+		props.UserID = &userID
 	}
 	if ctx.IsSet("group-id") {
-		props.GroupID = &groupId
+		props.GroupID = &groupID
 	}
 
 	propsJSON, err := json.Marshal(props)

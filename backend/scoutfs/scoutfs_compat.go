@@ -185,13 +185,13 @@ func statMore(path string) (stat, error) {
 	}
 	var s stat
 
-	s.Meta_seq = st.Meta_seq
-	s.Data_seq = st.Data_seq
-	s.Data_version = st.Data_version
-	s.Online_blocks = st.Online_blocks
-	s.Offline_blocks = st.Offline_blocks
-	s.Crtime_sec = st.Crtime_sec
-	s.Crtime_nsec = st.Crtime_nsec
+	s.MetaSeq = st.Meta_seq
+	s.DataSeq = st.Data_seq
+	s.DataVersion = st.Data_version
+	s.OnlineBlocks = st.Online_blocks
+	s.OfflineBlocks = st.Offline_blocks
+	s.CrtimeSec = st.Crtime_sec
+	s.CrtimeNsec = st.Crtime_nsec
 
 	return s, nil
 }

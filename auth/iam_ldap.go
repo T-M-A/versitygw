@@ -29,16 +29,16 @@ type LdapIAMService struct {
 	accessAtr  string
 	secretAtr  string
 	roleAtr    string
-	groupIdAtr string
-	userIdAtr  string
+	groupIDAtr string
+	userIDAtr  string
 	rootAcc    Account
 }
 
 var _ IAMService = &LdapIAMService{}
 
-func NewLDAPService(rootAcc Account, url, bindDN, pass, queryBase, accAtr, secAtr, roleAtr, userIdAtr, groupIdAtr, objClasses string) (IAMService, error) {
+func NewLDAPService(rootAcc Account, url, bindDN, pass, queryBase, accAtr, secAtr, roleAtr, userIDAtr, groupIDAtr, objClasses string) (IAMService, error) {
 	if url == "" || bindDN == "" || pass == "" || queryBase == "" || accAtr == "" ||
-		secAtr == "" || roleAtr == "" || userIdAtr == "" || groupIdAtr == "" || objClasses == "" {
+		secAtr == "" || roleAtr == "" || userIDAtr == "" || groupIDAtr == "" || objClasses == "" {
 		return nil, fmt.Errorf("required parameters list not fully provided")
 	}
 	conn, err := ldap.DialURL(url)
@@ -57,8 +57,8 @@ func NewLDAPService(rootAcc Account, url, bindDN, pass, queryBase, accAtr, secAt
 		accessAtr:  accAtr,
 		secretAtr:  secAtr,
 		roleAtr:    roleAtr,
-		userIdAtr:  userIdAtr,
-		groupIdAtr: groupIdAtr,
+		userIDAtr:  userIDAtr,
+		groupIDAtr: groupIDAtr,
 		rootAcc:    rootAcc,
 	}, nil
 }
@@ -72,8 +72,8 @@ func (ld *LdapIAMService) CreateAccount(account Account) error {
 	userEntry.Attribute(ld.accessAtr, []string{account.Access})
 	userEntry.Attribute(ld.secretAtr, []string{account.Secret})
 	userEntry.Attribute(ld.roleAtr, []string{string(account.Role)})
-	userEntry.Attribute(ld.groupIdAtr, []string{fmt.Sprint(account.GroupID)})
-	userEntry.Attribute(ld.userIdAtr, []string{fmt.Sprint(account.UserID)})
+	userEntry.Attribute(ld.groupIDAtr, []string{fmt.Sprint(account.GroupID)})
+	userEntry.Attribute(ld.userIDAtr, []string{fmt.Sprint(account.UserID)})
 
 	err := ld.conn.Add(userEntry)
 	if err != nil {
@@ -95,7 +95,7 @@ func (ld *LdapIAMService) GetUserAccount(access string) (Account, error) {
 		0,
 		false,
 		fmt.Sprintf("(%v=%v)", ld.accessAtr, access),
-		[]string{ld.accessAtr, ld.secretAtr, ld.roleAtr, ld.userIdAtr, ld.groupIdAtr},
+		[]string{ld.accessAtr, ld.secretAtr, ld.roleAtr, ld.userIDAtr, ld.groupIDAtr},
 		nil,
 	)
 
@@ -109,20 +109,20 @@ func (ld *LdapIAMService) GetUserAccount(access string) (Account, error) {
 	}
 
 	entry := result.Entries[0]
-	groupId, err := strconv.Atoi(entry.GetAttributeValue(ld.groupIdAtr))
+	groupID, err := strconv.Atoi(entry.GetAttributeValue(ld.groupIDAtr))
 	if err != nil {
-		return Account{}, fmt.Errorf("invalid entry value for group-id: %v", entry.GetAttributeValue(ld.groupIdAtr))
+		return Account{}, fmt.Errorf("invalid entry value for group-id: %v", entry.GetAttributeValue(ld.groupIDAtr))
 	}
-	userId, err := strconv.Atoi(entry.GetAttributeValue(ld.userIdAtr))
+	userID, err := strconv.Atoi(entry.GetAttributeValue(ld.userIDAtr))
 	if err != nil {
-		return Account{}, fmt.Errorf("invalid entry value for group-id: %v", entry.GetAttributeValue(ld.userIdAtr))
+		return Account{}, fmt.Errorf("invalid entry value for group-id: %v", entry.GetAttributeValue(ld.userIDAtr))
 	}
 	return Account{
 		Access:  entry.GetAttributeValue(ld.accessAtr),
 		Secret:  entry.GetAttributeValue(ld.secretAtr),
 		Role:    Role(entry.GetAttributeValue(ld.roleAtr)),
-		GroupID: groupId,
-		UserID:  userId,
+		GroupID: groupID,
+		UserID:  userID,
 	}, nil
 }
 
@@ -132,10 +132,10 @@ func (ld *LdapIAMService) UpdateUserAccount(access string, props MutableProps) e
 		req.Replace(ld.secretAtr, []string{*props.Secret})
 	}
 	if props.GroupID != nil {
-		req.Replace(ld.groupIdAtr, []string{fmt.Sprint(*props.GroupID)})
+		req.Replace(ld.groupIDAtr, []string{fmt.Sprint(*props.GroupID)})
 	}
 	if props.UserID != nil {
-		req.Replace(ld.userIdAtr, []string{fmt.Sprint(*props.UserID)})
+		req.Replace(ld.userIDAtr, []string{fmt.Sprint(*props.UserID)})
 	}
 
 	err := ld.conn.Modify(req)
@@ -170,7 +170,7 @@ func (ld *LdapIAMService) ListUserAccounts() ([]Account, error) {
 		0,
 		false,
 		fmt.Sprintf("(&%v)", searchFilter),
-		[]string{ld.accessAtr, ld.secretAtr, ld.roleAtr, ld.groupIdAtr, ld.userIdAtr},
+		[]string{ld.accessAtr, ld.secretAtr, ld.roleAtr, ld.groupIDAtr, ld.userIDAtr},
 		nil,
 	)
 
@@ -181,20 +181,20 @@ func (ld *LdapIAMService) ListUserAccounts() ([]Account, error) {
 
 	result := []Account{}
 	for _, el := range resp.Entries {
-		groupId, err := strconv.Atoi(el.GetAttributeValue(ld.groupIdAtr))
+		groupID, err := strconv.Atoi(el.GetAttributeValue(ld.groupIDAtr))
 		if err != nil {
-			return nil, fmt.Errorf("invalid entry value for group-id: %v", el.GetAttributeValue(ld.groupIdAtr))
+			return nil, fmt.Errorf("invalid entry value for group-id: %v", el.GetAttributeValue(ld.groupIDAtr))
 		}
-		userId, err := strconv.Atoi(el.GetAttributeValue(ld.userIdAtr))
+		userID, err := strconv.Atoi(el.GetAttributeValue(ld.userIDAtr))
 		if err != nil {
-			return nil, fmt.Errorf("invalid entry value for group-id: %v", el.GetAttributeValue(ld.userIdAtr))
+			return nil, fmt.Errorf("invalid entry value for group-id: %v", el.GetAttributeValue(ld.userIDAtr))
 		}
 		result = append(result, Account{
 			Access:  el.GetAttributeValue(ld.accessAtr),
 			Secret:  el.GetAttributeValue(ld.secretAtr),
 			Role:    Role(el.GetAttributeValue(ld.roleAtr)),
-			GroupID: groupId,
-			UserID:  userId,
+			GroupID: groupID,
+			UserID:  userID,
 		})
 	}
 

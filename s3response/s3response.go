@@ -78,7 +78,7 @@ type GetObjectAttributesResult struct {
 	LastModified *time.Time
 	ObjectSize   *int64
 	StorageClass types.StorageClass
-	VersionId    *string
+	VersionID    *string
 	ObjectParts  *ObjectParts
 }
 
@@ -310,7 +310,7 @@ type CopyObjectResult struct {
 	XMLName             xml.Name `xml:"http://s3.amazonaws.com/doc/2006-03-01/ CopyObjectResult" json:"-"`
 	LastModified        time.Time
 	ETag                string
-	CopySourceVersionId string `xml:"-"`
+	CopySourceVersionID string `xml:"-"`
 }
 
 func (r CopyObjectResult) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
@@ -364,7 +364,7 @@ type InitiateMultipartUploadResult struct {
 	XMLName  xml.Name `xml:"http://s3.amazonaws.com/doc/2006-03-01/ InitiateMultipartUploadResult" json:"-"`
 	Bucket   string
 	Key      string
-	UploadId string
+	UploadID string
 }
 
 type ListVersionsResult struct {
@@ -378,10 +378,10 @@ type ListVersionsResult struct {
 	MaxKeys             *int32
 	Name                *string
 	NextKeyMarker       *string
-	NextVersionIdMarker *string
+	NextVersionIDMarker *string
 	Prefix              *string
 	RequestCharged      types.RequestCharged
-	VersionIdMarker     *string
+	VersionIDMarker     *string
 	Versions            []types.ObjectVersion `xml:"Version"`
 }
 

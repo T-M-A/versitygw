@@ -178,13 +178,13 @@ func TestS3ApiController_GetActions(t *testing.T) {
 	contentLength := int64(1000)
 	s3ApiController := S3ApiController{
 		be: &BackendMock{
-			GetBucketAclFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
+			GetBucketACLFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
 				return acldata, nil
 			},
 			ListPartsFunc: func(context.Context, *s3.ListPartsInput) (s3response.ListPartsResult, error) {
 				return s3response.ListPartsResult{}, nil
 			},
-			GetObjectAclFunc: func(context.Context, *s3.GetObjectAclInput) (*s3.GetObjectAclOutput, error) {
+			GetObjectACLFunc: func(context.Context, *s3.GetObjectAclInput) (*s3.GetObjectAclOutput, error) {
 				return &s3.GetObjectAclOutput{}, nil
 			},
 			GetObjectAttributesFunc: func(context.Context, *s3.GetObjectAttributesInput) (s3response.GetObjectAttributesResult, error) {
@@ -367,7 +367,7 @@ func TestS3ApiController_ListActions(t *testing.T) {
 	app := fiber.New()
 	s3ApiController := S3ApiController{
 		be: &BackendMock{
-			GetBucketAclFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
+			GetBucketACLFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
 				return acldata, nil
 			},
 			ListMultipartUploadsFunc: func(_ context.Context, output *s3.ListMultipartUploadsInput) (s3response.ListMultipartUploadsResult, error) {
@@ -413,7 +413,7 @@ func TestS3ApiController_ListActions(t *testing.T) {
 	// Error case
 	s3ApiControllerError := S3ApiController{
 		be: &BackendMock{
-			GetBucketAclFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
+			GetBucketACLFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
 				return acldata, nil
 			},
 			ListObjectsFunc: func(context.Context, *s3.ListObjectsInput) (s3response.ListObjectsResult, error) {
@@ -665,10 +665,10 @@ func TestS3ApiController_PutBucketActions(t *testing.T) {
 
 	s3ApiController := S3ApiController{
 		be: &BackendMock{
-			GetBucketAclFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
+			GetBucketACLFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
 				return acldata, nil
 			},
-			PutBucketAclFunc: func(context.Context, string, []byte) error {
+			PutBucketACLFunc: func(context.Context, string, []byte) error {
 				return nil
 			},
 			CreateBucketFunc: func(context.Context, *s3.CreateBucketInput, []byte) error {
@@ -705,13 +705,13 @@ func TestS3ApiController_PutBucketActions(t *testing.T) {
 	app.Put("/:bucket", s3ApiController.PutBucketActions)
 
 	// invalid acl case
-	invAclReq := httptest.NewRequest(http.MethodPut, "/my-bucket?acl", nil)
-	invAclReq.Header.Set("X-Amz-Acl", "invalid")
+	invACLReq := httptest.NewRequest(http.MethodPut, "/my-bucket?acl", nil)
+	invACLReq.Header.Set("X-Amz-Acl", "invalid")
 
 	// invalid acl case 2
-	errAclReq := httptest.NewRequest(http.MethodPut, "/my-bucket?acl", nil)
-	errAclReq.Header.Set("X-Amz-Acl", "private")
-	errAclReq.Header.Set("X-Amz-Grant-Read", "hello")
+	errACLReq := httptest.NewRequest(http.MethodPut, "/my-bucket?acl", nil)
+	errACLReq.Header.Set("X-Amz-Acl", "private")
+	errACLReq.Header.Set("X-Amz-Grant-Read", "hello")
 
 	// PutBucketAcl incorrect bucket owner case
 	incorrectBucketOwner := httptest.NewRequest(http.MethodPut, "/my-bucket?acl", strings.NewReader(invOwnerBody))
@@ -721,11 +721,11 @@ func TestS3ApiController_PutBucketActions(t *testing.T) {
 	aclSuccReq.Header.Set("X-Amz-Acl", "private")
 
 	// Invalid acl body case
-	errAclBodyReq := httptest.NewRequest(http.MethodPut, "/my-bucket?acl", strings.NewReader(body))
-	errAclBodyReq.Header.Set("X-Amz-Grant-Read", "hello")
+	errACLBodyReq := httptest.NewRequest(http.MethodPut, "/my-bucket?acl", strings.NewReader(body))
+	errACLBodyReq.Header.Set("X-Amz-Grant-Read", "hello")
 
-	invAclOwnershipReq := httptest.NewRequest(http.MethodPut, "/my-bucket", nil)
-	invAclOwnershipReq.Header.Set("X-Amz-Grant-Read", "hello")
+	invACLOwnershipReq := httptest.NewRequest(http.MethodPut, "/my-bucket", nil)
+	invACLOwnershipReq.Header.Set("X-Amz-Grant-Read", "hello")
 
 	tests := []struct {
 		name       string
@@ -828,7 +828,7 @@ func TestS3ApiController_PutBucketActions(t *testing.T) {
 			name: "Put-bucket-acl-invalid-acl",
 			app:  app,
 			args: args{
-				req: invAclReq,
+				req: invACLReq,
 			},
 			wantErr:    false,
 			statusCode: 400,
@@ -837,7 +837,7 @@ func TestS3ApiController_PutBucketActions(t *testing.T) {
 			name: "Put-bucket-acl-incorrect-acl",
 			app:  app,
 			args: args{
-				req: errAclReq,
+				req: errACLReq,
 			},
 			wantErr:    false,
 			statusCode: 400,
@@ -846,7 +846,7 @@ func TestS3ApiController_PutBucketActions(t *testing.T) {
 			name: "Put-bucket-acl-incorrect-acl-body",
 			app:  app,
 			args: args{
-				req: errAclBodyReq,
+				req: errACLBodyReq,
 			},
 			wantErr:    false,
 			statusCode: 400,
@@ -873,7 +873,7 @@ func TestS3ApiController_PutBucketActions(t *testing.T) {
 			name: "Create-bucket-invalid-acl-ownership-combination",
 			app:  app,
 			args: args{
-				req: invAclOwnershipReq,
+				req: invACLOwnershipReq,
 			},
 			wantErr:    false,
 			statusCode: 400,
@@ -957,10 +957,10 @@ func TestS3ApiController_PutActions(t *testing.T) {
 	app := fiber.New()
 	s3ApiController := S3ApiController{
 		be: &BackendMock{
-			GetBucketAclFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
+			GetBucketACLFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
 				return acldata, nil
 			},
-			PutObjectAclFunc: func(context.Context, *s3.PutObjectAclInput) error {
+			PutObjectACLFunc: func(context.Context, *s3.PutObjectAclInput) error {
 				return nil
 			},
 			CopyObjectFunc: func(context.Context, *s3.CopyObjectInput) (*s3.CopyObjectOutput, error) {
@@ -1021,17 +1021,17 @@ func TestS3ApiController_PutActions(t *testing.T) {
 	aclGrtReq.Header.Set("X-Amz-Grant-Read", "private")
 
 	// invalid acl case 1
-	invAclReq := httptest.NewRequest(http.MethodPut, "/my-bucket/my-key?acl", nil)
-	invAclReq.Header.Set("X-Amz-Acl", "invalid")
+	invACLReq := httptest.NewRequest(http.MethodPut, "/my-bucket/my-key?acl", nil)
+	invACLReq.Header.Set("X-Amz-Acl", "invalid")
 
 	// invalid acl case 2
-	errAclReq := httptest.NewRequest(http.MethodPut, "/my-bucket/my-key?acl", nil)
-	errAclReq.Header.Set("X-Amz-Acl", "private")
-	errAclReq.Header.Set("X-Amz-Grant-Read", "hello")
+	errACLReq := httptest.NewRequest(http.MethodPut, "/my-bucket/my-key?acl", nil)
+	errACLReq.Header.Set("X-Amz-Acl", "private")
+	errACLReq.Header.Set("X-Amz-Grant-Read", "hello")
 
 	// invalid body & grt case
-	invAclBodyGrtReq := httptest.NewRequest(http.MethodPut, "/my-bucket/my-key?acl", strings.NewReader(body))
-	invAclBodyGrtReq.Header.Set("X-Amz-Grant-Read", "hello")
+	invACLBodyGrtReq := httptest.NewRequest(http.MethodPut, "/my-bucket/my-key?acl", strings.NewReader(body))
+	invACLBodyGrtReq.Header.Set("X-Amz-Grant-Read", "hello")
 
 	tests := []struct {
 		name       string
@@ -1107,7 +1107,7 @@ func TestS3ApiController_PutActions(t *testing.T) {
 			name: "Put-object-acl-invalid-acl",
 			app:  app,
 			args: args{
-				req: invAclReq,
+				req: invACLReq,
 			},
 			wantErr:    false,
 			statusCode: 400,
@@ -1116,7 +1116,7 @@ func TestS3ApiController_PutActions(t *testing.T) {
 			name: "Put-object-acl-incorrect-acl",
 			app:  app,
 			args: args{
-				req: errAclReq,
+				req: errACLReq,
 			},
 			wantErr:    false,
 			statusCode: 400,
@@ -1125,7 +1125,7 @@ func TestS3ApiController_PutActions(t *testing.T) {
 			name: "Put-object-acl-incorrect-acl-body-case",
 			app:  app,
 			args: args{
-				req: invAclBodyGrtReq,
+				req: invACLBodyGrtReq,
 			},
 			wantErr:    false,
 			statusCode: 400,
@@ -1306,7 +1306,7 @@ func TestS3ApiController_DeleteObjects(t *testing.T) {
 	app := fiber.New()
 	s3ApiController := S3ApiController{
 		be: &BackendMock{
-			GetBucketAclFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
+			GetBucketACLFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
 				return acldata, nil
 			},
 			DeleteObjectsFunc: func(context.Context, *s3.DeleteObjectsInput) (s3response.DeleteResult, error) {
@@ -1380,7 +1380,7 @@ func TestS3ApiController_DeleteActions(t *testing.T) {
 	app := fiber.New()
 	s3ApiController := S3ApiController{
 		be: &BackendMock{
-			GetBucketAclFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
+			GetBucketACLFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
 				return acldata, nil
 			},
 			DeleteObjectFunc: func(contextMoqParam context.Context, deleteObjectInput *s3.DeleteObjectInput) (*s3.DeleteObjectOutput, error) {
@@ -1411,7 +1411,7 @@ func TestS3ApiController_DeleteActions(t *testing.T) {
 	appErr := fiber.New()
 
 	s3ApiControllerErr := S3ApiController{be: &BackendMock{
-		GetBucketAclFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
+		GetBucketACLFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
 			return acldata, nil
 		},
 		DeleteObjectFunc: func(contextMoqParam context.Context, deleteObjectInput *s3.DeleteObjectInput) (*s3.DeleteObjectOutput, error) {
@@ -1496,7 +1496,7 @@ func TestS3ApiController_HeadBucket(t *testing.T) {
 	app := fiber.New()
 	s3ApiController := S3ApiController{
 		be: &BackendMock{
-			GetBucketAclFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
+			GetBucketACLFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
 				return acldata, nil
 			},
 			HeadBucketFunc: func(context.Context, *s3.HeadBucketInput) (*s3.HeadBucketOutput, error) {
@@ -1520,7 +1520,7 @@ func TestS3ApiController_HeadBucket(t *testing.T) {
 	appErr := fiber.New()
 
 	s3ApiControllerErr := S3ApiController{be: &BackendMock{
-		GetBucketAclFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
+		GetBucketACLFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
 			return acldata, nil
 		},
 		HeadBucketFunc: func(context.Context, *s3.HeadBucketInput) (*s3.HeadBucketOutput, error) {
@@ -1595,7 +1595,7 @@ func TestS3ApiController_HeadObject(t *testing.T) {
 
 	s3ApiController := S3ApiController{
 		be: &BackendMock{
-			GetBucketAclFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
+			GetBucketACLFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
 				return acldata, nil
 			},
 			HeadObjectFunc: func(context.Context, *s3.HeadObjectInput) (*s3.HeadObjectOutput, error) {
@@ -1624,7 +1624,7 @@ func TestS3ApiController_HeadObject(t *testing.T) {
 
 	s3ApiControllerErr := S3ApiController{
 		be: &BackendMock{
-			GetBucketAclFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
+			GetBucketACLFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
 				return acldata, nil
 			},
 			HeadObjectFunc: func(context.Context, *s3.HeadObjectInput) (*s3.HeadObjectOutput, error) {
@@ -1688,7 +1688,7 @@ func TestS3ApiController_CreateActions(t *testing.T) {
 	app := fiber.New()
 	s3ApiController := S3ApiController{
 		be: &BackendMock{
-			GetBucketAclFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
+			GetBucketACLFunc: func(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
 				return acldata, nil
 			},
 			RestoreObjectFunc: func(context.Context, *s3.RestoreObjectInput) error {

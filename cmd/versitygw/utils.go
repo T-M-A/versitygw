@@ -65,7 +65,7 @@ func generateEventFiltersConfig(ctx *cli.Context) error {
 		s3event.EventObjectTagging:              true,
 		s3event.EventObjectTaggingPut:           true,
 		s3event.EventObjectTaggingDelete:        true,
-		s3event.EventObjectAclPut:               true,
+		s3event.EventObjectACLPut:               true,
 		s3event.EventObjectRestore:              true,
 		s3event.EventObjectRestorePost:          true,
 		s3event.EventObjectRestoreCompleted:     true,

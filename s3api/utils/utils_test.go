@@ -74,7 +74,7 @@ func TestCreateHttpRequestFromCtx(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := createHttpRequestFromCtx(tt.args.ctx, tt.hdrs, 0)
+			got, err := createHTTPRequestFromCtx(tt.args.ctx, tt.hdrs, 0)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CreateHttpRequestFromCtx() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -317,13 +317,13 @@ func TestFilterObjectAttributes(t *testing.T) {
 					ObjectSize:  &objSize,
 					ETag:        &etag,
 					ObjectParts: &s3response.ObjectParts{},
-					VersionId:   &etag,
+					VersionID:   &etag,
 				},
 			},
 			want: s3response.GetObjectAttributesResult{
 				ETag:       &etag,
 				ObjectSize: &objSize,
-				VersionId:  &etag,
+				VersionID:  &etag,
 			},
 		},
 	}

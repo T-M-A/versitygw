@@ -123,16 +123,16 @@ const (
 	ErrBucketTaggingNotFound
 	ErrObjectLockInvalidHeaders
 	ErrRequestTimeTooSkewed
-	ErrInvalidBucketAclWithObjectOwnership
+	ErrInvalidBucketACLWithObjectOwnership
 	ErrBothCannedAndHeaderGrants
 	ErrOwnershipControlsNotFound
-	ErrAclNotSupported
+	ErrACLNotSupported
 	ErrMalformedACL
 	ErrUnexpectedContent
 	ErrMissingSecurityHeader
 	ErrInvalidMetadataDirective
 	ErrKeyTooLong
-	ErrInvalidVersionId
+	ErrInvalidVersionID
 	ErrNoSuchVersion
 
 	// Non-AWS errors
@@ -483,7 +483,7 @@ var errorCodeResponse = map[ErrorCode]APIError{
 		Description:    "The difference between the request time and the server's time is too large.",
 		HTTPStatusCode: http.StatusForbidden,
 	},
-	ErrInvalidBucketAclWithObjectOwnership: {
+	ErrInvalidBucketACLWithObjectOwnership: {
 		Code:           "ErrInvalidBucketAclWithObjectOwnership",
 		Description:    "Bucket cannot have ACLs set with ObjectOwnership's BucketOwnerEnforced setting.",
 		HTTPStatusCode: http.StatusBadRequest,
@@ -498,7 +498,7 @@ var errorCodeResponse = map[ErrorCode]APIError{
 		Description:    "The bucket ownership controls were not found.",
 		HTTPStatusCode: http.StatusNotFound,
 	},
-	ErrAclNotSupported: {
+	ErrACLNotSupported: {
 		Code:           "AccessControlListNotSupported",
 		Description:    "The bucket does not allow ACLs.",
 		HTTPStatusCode: http.StatusBadRequest,
@@ -522,7 +522,7 @@ var errorCodeResponse = map[ErrorCode]APIError{
 		Code:        "InvalidArgument",
 		Description: "Unknown metadata directive.",
 	},
-	ErrInvalidVersionId: {
+	ErrInvalidVersionID: {
 		Code:           "InvalidArgument",
 		Description:    "Invalid version id specified",
 		HTTPStatusCode: http.StatusBadRequest,
@@ -566,7 +566,7 @@ func GetAPIError(code ErrorCode) APIError {
 	return errorCodeResponse[code]
 }
 
-// getErrorResponse gets in standard error and resource value and
+// GetAPIErrorResponse gets in standard error and resource value and
 // provides a encodable populated response values
 func GetAPIErrorResponse(err APIError, resource, requestID, hostID string) []byte {
 	return encodeResponse(APIErrorResponse{

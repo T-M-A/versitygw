@@ -22,9 +22,9 @@ import (
 type Action string
 
 const (
-	GetBucketAclAction                     Action = "s3:GetBucketAcl"
+	GetBucketACLAction                     Action = "s3:GetBucketAcl"
 	CreateBucketAction                     Action = "s3:CreateBucket"
-	PutBucketAclAction                     Action = "s3:PutBucketAcl"
+	PutBucketACLAction                     Action = "s3:PutBucketAcl"
 	DeleteBucketAction                     Action = "s3:DeleteBucket"
 	PutBucketVersioningAction              Action = "s3:PutBucketVersioning"
 	GetBucketVersioningAction              Action = "s3:GetBucketVersioning"
@@ -38,9 +38,9 @@ const (
 	GetObjectAction                        Action = "s3:GetObject"
 	GetObjectVersionAction                 Action = "s3:GetObjectVersion"
 	DeleteObjectAction                     Action = "s3:DeleteObject"
-	GetObjectAclAction                     Action = "s3:GetObjectAcl"
+	GetObjectACLAction                     Action = "s3:GetObjectAcl"
 	GetObjectAttributesAction              Action = "s3:GetObjectAttributes"
-	PutObjectAclAction                     Action = "s3:PutObjectAcl"
+	PutObjectACLAction                     Action = "s3:PutObjectAcl"
 	RestoreObjectAction                    Action = "s3:RestoreObject"
 	GetBucketTaggingAction                 Action = "s3:GetBucketTagging"
 	PutBucketTaggingAction                 Action = "s3:PutBucketTagging"
@@ -62,9 +62,9 @@ const (
 )
 
 var supportedActionList = map[Action]struct{}{
-	GetBucketAclAction:                     {},
+	GetBucketACLAction:                     {},
 	CreateBucketAction:                     {},
-	PutBucketAclAction:                     {},
+	PutBucketACLAction:                     {},
 	DeleteBucketAction:                     {},
 	PutBucketVersioningAction:              {},
 	GetBucketVersioningAction:              {},
@@ -78,9 +78,9 @@ var supportedActionList = map[Action]struct{}{
 	GetObjectAction:                        {},
 	GetObjectVersionAction:                 {},
 	DeleteObjectAction:                     {},
-	GetObjectAclAction:                     {},
+	GetObjectACLAction:                     {},
 	GetObjectAttributesAction:              {},
-	PutObjectAclAction:                     {},
+	PutObjectACLAction:                     {},
 	RestoreObjectAction:                    {},
 	GetBucketTaggingAction:                 {},
 	PutBucketTaggingAction:                 {},
@@ -107,9 +107,9 @@ var supportedObjectActionList = map[Action]struct{}{
 	GetObjectAction:                 {},
 	GetObjectVersionAction:          {},
 	DeleteObjectAction:              {},
-	GetObjectAclAction:              {},
+	GetObjectACLAction:              {},
 	GetObjectAttributesAction:       {},
-	PutObjectAclAction:              {},
+	PutObjectACLAction:              {},
 	RestoreObjectAction:             {},
 	GetObjectTaggingAction:          {},
 	PutObjectTaggingAction:          {},
@@ -122,7 +122,7 @@ var supportedObjectActionList = map[Action]struct{}{
 	AllActions:                      {},
 }
 
-// Validates Action: it should either wildcard match with supported actions list or be in it
+// IsValid Validates Action: it should either wildcard match with supported actions list or be in it
 func (a Action) IsValid() error {
 	if !strings.HasPrefix(string(a), "s3:") {
 		return errInvalidAction
@@ -154,7 +154,7 @@ func getBoolPtr(bl bool) *bool {
 	return &bl
 }
 
-// Checks if the action is object action
+// IsObjectAction Checks if the action is object action
 // nil points to 's3:*'
 func (a Action) IsObjectAction() *bool {
 	if a == AllActions {
@@ -185,7 +185,7 @@ func (a Action) WildCardMatch(act Action) bool {
 
 type Actions map[Action]struct{}
 
-// Override UnmarshalJSON method to decode both []string and string properties
+// UnmarshalJSON Override UnmarshalJSON method to decode both []string and string properties
 func (a *Actions) UnmarshalJSON(data []byte) error {
 	ss := []string{}
 	var err error
@@ -217,7 +217,7 @@ func (a *Actions) UnmarshalJSON(data []byte) error {
 	return err
 }
 
-// Validates and adds a new Action to Actions map
+// Add validates and adds a new Action to Actions map
 func (a Actions) Add(str string) error {
 	action := Action(str)
 	err := action.IsValid()

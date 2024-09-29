@@ -32,7 +32,7 @@ var (
 	singlePath = regexp.MustCompile(`^/[^/]+/?$`)
 )
 
-func AclParser(be backend.Backend, logger s3log.AuditLogger, readonly bool) fiber.Handler {
+func ACLParser(be backend.Backend, logger s3log.AuditLogger, readonly bool) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		isRoot, acct := ctx.Locals("isRoot").(bool), ctx.Locals("account").(auth.Account)
 		path := ctx.Path()
@@ -64,17 +64,17 @@ func AclParser(be backend.Backend, logger s3log.AuditLogger, readonly bool) fibe
 			}
 			return ctx.Next()
 		}
-		data, err := be.GetBucketAcl(ctx.Context(), &s3.GetBucketAclInput{Bucket: &bucket})
+		data, err := be.GetBucketACL(ctx.Context(), &s3.GetBucketAclInput{Bucket: &bucket})
 		if err != nil {
 			return controllers.SendResponse(ctx, err, &controllers.MetaOpts{Logger: logger})
 		}
 
-		parsedAcl, err := auth.ParseACL(data)
+		parsedACL, err := auth.ParseACL(data)
 		if err != nil {
 			return controllers.SendResponse(ctx, err, &controllers.MetaOpts{Logger: logger})
 		}
 
-		ctx.Locals("parsedAcl", parsedAcl)
+		ctx.Locals("parsedAcl", parsedACL)
 		return ctx.Next()
 	}
 }

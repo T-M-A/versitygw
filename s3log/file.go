@@ -103,7 +103,7 @@ func (f *FileLogger) Log(ctx *fiber.Ctx, err error, body []byte, meta LogMeta) {
 	lf.Operation = meta.Action
 	lf.Key = object
 	lf.RequestURI = reqURI
-	lf.HttpStatus = httpStatus
+	lf.HTTPStatus = httpStatus
 	lf.ErrorCode = errorCode
 	lf.BytesSent = len(body)
 	lf.ObjectSize = meta.ObjectSize
@@ -117,7 +117,7 @@ func (f *FileLogger) Log(ctx *fiber.Ctx, err error, body []byte, meta LogMeta) {
 	lf.AuthenticationType = "AuthHeader"
 	lf.HostHeader = fmt.Sprintf("s3.%v.amazonaws.com", ctx.Locals("region").(string))
 	lf.AccessPointARN = fmt.Sprintf("arn:aws:s3:::%v", strings.Join(path, "/"))
-	lf.AclRequired = "Yes"
+	lf.ACLRequired = "Yes"
 
 	f.writeLog(lf)
 }
@@ -179,7 +179,7 @@ func (f *FileLogger) writeLog(lf LogFields) {
 		lf.Operation,
 		lf.Key,
 		lf.RequestURI,
-		lf.HttpStatus,
+		lf.HTTPStatus,
 		lf.ErrorCode,
 		lf.BytesSent,
 		lf.ObjectSize,
@@ -195,7 +195,7 @@ func (f *FileLogger) writeLog(lf LogFields) {
 		lf.HostHeader,
 		lf.TLSVersion,
 		lf.AccessPointARN,
-		lf.AclRequired,
+		lf.ACLRequired,
 	)
 
 	_, err := f.f.WriteString(log)

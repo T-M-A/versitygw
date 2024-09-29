@@ -119,7 +119,7 @@ func CheckValidSignature(ctx *fiber.Ctx, auth AuthData, secret, checksum string,
 	signedHdrs := strings.Split(auth.SignedHeaders, ";")
 
 	// Create a new http request instance from fasthttp request
-	req, err := createHttpRequestFromCtx(ctx, signedHdrs, contentLen)
+	req, err := createHTTPRequestFromCtx(ctx, signedHdrs, contentLen)
 	if err != nil {
 		return fmt.Errorf("create http request from context: %w", err)
 	}

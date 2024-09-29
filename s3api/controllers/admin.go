@@ -284,7 +284,7 @@ func sendResponse(ctx *fiber.Ctx, err error, data any, m *metaOptions) error {
 		if m.logger != nil {
 			m.logger.Log(ctx, err, []byte(err.Error()), s3log.LogMeta{
 				Action:     m.action,
-				HttpStatus: status,
+				HTTPStatus: status,
 			})
 		}
 
@@ -300,7 +300,7 @@ func sendResponse(ctx *fiber.Ctx, err error, data any, m *metaOptions) error {
 		if m.logger != nil {
 			m.logger.Log(ctx, nil, []byte(msg), s3log.LogMeta{
 				Action:     m.action,
-				HttpStatus: status,
+				HTTPStatus: status,
 			})
 		}
 
@@ -314,7 +314,7 @@ func sendResponse(ctx *fiber.Ctx, err error, data any, m *metaOptions) error {
 
 	if m.logger != nil {
 		m.logger.Log(ctx, nil, dataJSON, s3log.LogMeta{
-			HttpStatus: status,
+			HTTPStatus: status,
 			Action:     m.action,
 		})
 	}

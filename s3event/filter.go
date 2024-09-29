@@ -37,7 +37,7 @@ const (
 	EventObjectTagging              EventType = "s3:ObjectTagging:*"             // ObjectTagging
 	EventObjectTaggingPut           EventType = "s3:ObjectTagging:Put"
 	EventObjectTaggingDelete        EventType = "s3:ObjectTagging:Delete"
-	EventObjectAclPut               EventType = "s3:ObjectAcl:Put"
+	EventObjectACLPut               EventType = "s3:ObjectAcl:Put"
 	EventObjectRestore              EventType = "s3:ObjectRestore:*" // ObjectRestore
 	EventObjectRestorePost          EventType = "s3:ObjectRestore:Post"
 	EventObjectRestoreCompleted     EventType = "s3:ObjectRestore:Completed"
@@ -62,7 +62,7 @@ var supportedEventFilters = map[EventType]struct{}{
 	EventObjectTagging:              {},
 	EventObjectTaggingPut:           {},
 	EventObjectTaggingDelete:        {},
-	EventObjectAclPut:               {},
+	EventObjectACLPut:               {},
 	EventObjectRestore:              {},
 	EventObjectRestorePost:          {},
 	EventObjectRestoreCompleted:     {},

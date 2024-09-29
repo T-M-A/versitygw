@@ -86,13 +86,13 @@ type Opts struct {
 	LDAPAccessAtr          string
 	LDAPSecretAtr          string
 	LDAPRoleAtr            string
-	LDAPUserIdAtr          string
-	LDAPGroupIdAtr         string
+	LDAPUserIDAtr          string
+	LDAPGroupIDAtr         string
 	VaultEndpointURL       string
 	VaultSecretStoragePath string
 	VaultMountPath         string
 	VaultRootToken         string
-	VaultRoleId            string
+	VaultRoleID            string
 	VaultRoleSecret        string
 	VaultServerCert        string
 	VaultClientCert        string
@@ -119,8 +119,8 @@ func New(o *Opts) (IAMService, error) {
 		fmt.Printf("initializing internal IAM with %q\n", o.Dir)
 	case o.LDAPServerURL != "":
 		svc, err = NewLDAPService(o.RootAccount, o.LDAPServerURL, o.LDAPBindDN, o.LDAPPassword,
-			o.LDAPQueryBase, o.LDAPAccessAtr, o.LDAPSecretAtr, o.LDAPRoleAtr, o.LDAPUserIdAtr,
-			o.LDAPGroupIdAtr, o.LDAPObjClasses)
+			o.LDAPQueryBase, o.LDAPAccessAtr, o.LDAPSecretAtr, o.LDAPRoleAtr, o.LDAPUserIDAtr,
+			o.LDAPGroupIDAtr, o.LDAPObjClasses)
 		fmt.Printf("initializing LDAP IAM with %q\n", o.LDAPServerURL)
 	case o.S3Endpoint != "":
 		svc, err = NewS3(o.RootAccount, o.S3Access, o.S3Secret, o.S3Region, o.S3Bucket,
@@ -129,7 +129,7 @@ func New(o *Opts) (IAMService, error) {
 			o.S3Endpoint, o.S3Bucket)
 	case o.VaultEndpointURL != "":
 		svc, err = NewVaultIAMService(o.RootAccount, o.VaultEndpointURL, o.VaultSecretStoragePath,
-			o.VaultMountPath, o.VaultRootToken, o.VaultRoleId, o.VaultRoleSecret,
+			o.VaultMountPath, o.VaultRootToken, o.VaultRoleID, o.VaultRoleSecret,
 			o.VaultServerCert, o.VaultClientCert, o.VaultClientCertKey)
 		fmt.Printf("initializing Vault IAM with %q\n", o.VaultEndpointURL)
 	default:

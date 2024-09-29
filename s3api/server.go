@@ -83,7 +83,7 @@ func New(
 	app.Use(middlewares.VerifyV4Signature(root, iam, l, mm, region, server.debug))
 	app.Use(middlewares.ProcessChunkedBody(root, iam, l, mm, region))
 	app.Use(middlewares.VerifyMD5Body(l))
-	app.Use(middlewares.AclParser(be, l, server.readonly))
+	app.Use(middlewares.ACLParser(be, l, server.readonly))
 
 	server.router.Init(app, be, iam, l, adminLogger, evs, mm, server.debug, server.readonly)
 

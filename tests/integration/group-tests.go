@@ -301,7 +301,7 @@ func TestCompleteMultipartUpload(s *S3Conf) {
 	CompleteMultipartUpload_success(s)
 }
 
-func TestPutBucketAcl(s *S3Conf) {
+func TestPutBucketACL(s *S3Conf) {
 	PutBucketAcl_non_existing_bucket(s)
 	PutBucketAcl_disabled(s)
 	PutBucketAcl_none_of_the_options_specified(s)
@@ -316,7 +316,7 @@ func TestPutBucketAcl(s *S3Conf) {
 	PutBucketAcl_success_acp(s)
 }
 
-func TestGetBucketAcl(s *S3Conf) {
+func TestGetBucketACL(s *S3Conf) {
 	GetBucketAcl_non_existing_bucket(s)
 	GetBucketAcl_translation_canned_public_read(s)
 	GetBucketAcl_translation_canned_public_read_write(s)
@@ -463,8 +463,8 @@ func TestFullFlow(s *S3Conf) {
 	TestListMultipartUploads(s)
 	TestAbortMultipartUpload(s)
 	TestCompleteMultipartUpload(s)
-	TestPutBucketAcl(s)
-	TestGetBucketAcl(s)
+	TestPutBucketACL(s)
+	TestGetBucketACL(s)
 	TestPutBucketPolicy(s)
 	TestGetBucketPolicy(s)
 	TestDeleteBucketPolicy(s)

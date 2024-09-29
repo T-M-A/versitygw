@@ -199,9 +199,9 @@ func (s *S3Proxy) ListObjectVersions(ctx context.Context, input *s3.ListObjectVe
 		MaxKeys:             out.MaxKeys,
 		Name:                out.Name,
 		NextKeyMarker:       out.NextKeyMarker,
-		NextVersionIdMarker: out.NextVersionIdMarker,
+		NextVersionIDMarker: out.NextVersionIdMarker,
 		Prefix:              out.Prefix,
-		VersionIdMarker:     input.VersionIdMarker,
+		VersionIDMarker:     input.VersionIdMarker,
 		Versions:            out.Versions,
 	}, nil
 }
@@ -215,7 +215,7 @@ func (s *S3Proxy) CreateMultipartUpload(ctx context.Context, input *s3.CreateMul
 	return s3response.InitiateMultipartUploadResult{
 		Bucket:   *out.Bucket,
 		Key:      *out.Key,
-		UploadId: *out.UploadId,
+		UploadID: *out.UploadId,
 	}, nil
 }
 
@@ -416,7 +416,7 @@ func (s *S3Proxy) GetObjectAttributes(ctx context.Context, input *s3.GetObjectAt
 		LastModified: out.LastModified,
 		ObjectSize:   out.ObjectSize,
 		StorageClass: out.StorageClass,
-		VersionId:    out.VersionId,
+		VersionID:    out.VersionId,
 		ObjectParts:  &parts,
 	}, handleError(err)
 }
@@ -490,7 +490,7 @@ func (s *S3Proxy) DeleteObjects(ctx context.Context, input *s3.DeleteObjectsInpu
 	}, nil
 }
 
-func (s *S3Proxy) GetBucketAcl(ctx context.Context, input *s3.GetBucketAclInput) ([]byte, error) {
+func (s *S3Proxy) GetBucketACL(ctx context.Context, input *s3.GetBucketAclInput) ([]byte, error) {
 	tagout, err := s.client.GetBucketTagging(ctx, &s3.GetBucketTaggingInput{
 		Bucket: input.Bucket,
 	})
@@ -511,7 +511,7 @@ func (s *S3Proxy) GetBucketAcl(ctx context.Context, input *s3.GetBucketAclInput)
 	return []byte{}, nil
 }
 
-func (s *S3Proxy) PutBucketAcl(ctx context.Context, bucket string, data []byte) error {
+func (s *S3Proxy) PutBucketACL(ctx context.Context, bucket string, data []byte) error {
 	tagout, err := s.client.GetBucketTagging(ctx, &s3.GetBucketTaggingInput{
 		Bucket: &bucket,
 	})
@@ -651,7 +651,7 @@ func (s *S3Proxy) GetObjectLockConfiguration(ctx context.Context, bucket string)
 	return json.Marshal(config)
 }
 
-func (s *S3Proxy) PutObjectRetention(ctx context.Context, bucket, object, versionId string, bypass bool, retention []byte) error {
+func (s *S3Proxy) PutObjectRetention(ctx context.Context, bucket, object, versionID string, bypass bool, retention []byte) error {
 	ret, err := auth.ParseObjectLockRetentionOutput(retention)
 	if err != nil {
 		return err
@@ -660,18 +660,18 @@ func (s *S3Proxy) PutObjectRetention(ctx context.Context, bucket, object, versio
 	_, err = s.client.PutObjectRetention(ctx, &s3.PutObjectRetentionInput{
 		Bucket:                    &bucket,
 		Key:                       &object,
-		VersionId:                 &versionId,
+		VersionId:                 &versionID,
 		Retention:                 ret,
 		BypassGovernanceRetention: &bypass,
 	})
 	return handleError(err)
 }
 
-func (s *S3Proxy) GetObjectRetention(ctx context.Context, bucket, object, versionId string) ([]byte, error) {
+func (s *S3Proxy) GetObjectRetention(ctx context.Context, bucket, object, versionID string) ([]byte, error) {
 	resp, err := s.client.GetObjectRetention(ctx, &s3.GetObjectRetentionInput{
 		Bucket:    &bucket,
 		Key:       &object,
-		VersionId: &versionId,
+		VersionId: &versionID,
 	})
 	if err != nil {
 		return nil, handleError(err)
@@ -680,7 +680,7 @@ func (s *S3Proxy) GetObjectRetention(ctx context.Context, bucket, object, versio
 	return json.Marshal(resp.Retention)
 }
 
-func (s *S3Proxy) PutObjectLegalHold(ctx context.Context, bucket, object, versionId string, status bool) error {
+func (s *S3Proxy) PutObjectLegalHold(ctx context.Context, bucket, object, versionID string, status bool) error {
 	var st types.ObjectLockLegalHoldStatus
 	if status {
 		st = types.ObjectLockLegalHoldStatusOn
@@ -691,7 +691,7 @@ func (s *S3Proxy) PutObjectLegalHold(ctx context.Context, bucket, object, versio
 	_, err := s.client.PutObjectLegalHold(ctx, &s3.PutObjectLegalHoldInput{
 		Bucket:    &bucket,
 		Key:       &object,
-		VersionId: &versionId,
+		VersionId: &versionID,
 		LegalHold: &types.ObjectLockLegalHold{
 			Status: st,
 		},
@@ -699,11 +699,11 @@ func (s *S3Proxy) PutObjectLegalHold(ctx context.Context, bucket, object, versio
 	return handleError(err)
 }
 
-func (s *S3Proxy) GetObjectLegalHold(ctx context.Context, bucket, object, versionId string) (*bool, error) {
+func (s *S3Proxy) GetObjectLegalHold(ctx context.Context, bucket, object, versionID string) (*bool, error) {
 	resp, err := s.client.GetObjectLegalHold(ctx, &s3.GetObjectLegalHoldInput{
 		Bucket:    &bucket,
 		Key:       &object,
-		VersionId: &versionId,
+		VersionId: &versionID,
 	})
 	if err != nil {
 		return nil, handleError(err)

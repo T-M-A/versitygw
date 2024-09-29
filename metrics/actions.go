@@ -36,12 +36,12 @@ var (
 	ActionDeleteObject                  = "s3_DeleteObject"
 	ActionDeleteObjectTagging           = "s3_DeleteObjectTagging"
 	ActionDeleteObjects                 = "s3_DeleteObjects"
-	ActionGetBucketAcl                  = "s3_GetBucketAcl"
+	ActionGetBucketACL                  = "s3_GetBucketAcl"
 	ActionGetBucketPolicy               = "s3_GetBucketPolicy"
 	ActionGetBucketTagging              = "s3_GetBucketTagging"
 	ActionGetBucketVersioning           = "s3_GetBucketVersioning"
 	ActionGetObject                     = "s3_GetObject"
-	ActionGetObjectAcl                  = "s3_GetObjectAcl"
+	ActionGetObjectACL                  = "s3_GetObjectAcl"
 	ActionGetObjectAttributes           = "s3_GetObjectAttributes"
 	ActionGetObjectLegalHold            = "s3_GetObjectLegalHold"
 	ActionGetObjectLockConfiguration    = "s3_GetObjectLockConfiguration"
@@ -55,12 +55,12 @@ var (
 	ActionListObjects                   = "s3_ListObjects"
 	ActionListObjectsV2                 = "s3_ListObjectsV2"
 	ActionListParts                     = "s3_ListParts"
-	ActionPutBucketAcl                  = "s3_PutBucketAcl"
+	ActionPutBucketACL                  = "s3_PutBucketAcl"
 	ActionPutBucketPolicy               = "s3_PutBucketPolicy"
 	ActionPutBucketTagging              = "s3_PutBucketTagging"
 	ActionPutBucketVersioning           = "s3_PutBucketVersioning"
 	ActionPutObject                     = "s3_PutObject"
-	ActionPutObjectAcl                  = "s3_PutObjectAcl"
+	ActionPutObjectACL                  = "s3_PutObjectAcl"
 	ActionPutObjectLegalHold            = "s3_PutObjectLegalHold"
 	ActionPutObjectLockConfiguration    = "s3_PutObjectLockConfiguration"
 	ActionPutObjectRetention            = "s3_PutObjectRetention"
@@ -126,7 +126,7 @@ func init() {
 		Name:    "DeleteObjects",
 		Service: "s3",
 	}
-	ActionMap[ActionGetBucketAcl] = Action{
+	ActionMap[ActionGetBucketACL] = Action{
 		Name:    "GetBucketAcl",
 		Service: "s3",
 	}
@@ -146,7 +146,7 @@ func init() {
 		Name:    "GetObject",
 		Service: "s3",
 	}
-	ActionMap[ActionGetObjectAcl] = Action{
+	ActionMap[ActionGetObjectACL] = Action{
 		Name:    "GetObjectAcl",
 		Service: "s3",
 	}
@@ -202,7 +202,7 @@ func init() {
 		Name:    "ListParts",
 		Service: "s3",
 	}
-	ActionMap[ActionPutBucketAcl] = Action{
+	ActionMap[ActionPutBucketACL] = Action{
 		Name:    "PutBucketAcl",
 		Service: "s3",
 	}
@@ -222,7 +222,7 @@ func init() {
 		Name:    "PutObject",
 		Service: "s3",
 	}
-	ActionMap[ActionPutObjectAcl] = Action{
+	ActionMap[ActionPutObjectACL] = Action{
 		Name:    "PutObjectAcl",
 		Service: "s3",
 	}

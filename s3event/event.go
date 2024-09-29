@@ -34,7 +34,7 @@ type EventMeta struct {
 	EventName   EventType
 	ObjectSize  int64
 	ObjectETag  *string
-	VersionId   *string
+	VersionID   *string
 }
 
 type EventSchema struct {
@@ -55,7 +55,7 @@ type EventRecord struct {
 }
 
 type EventUserIdentity struct {
-	PrincipalId string `json:"PrincipalId"`
+	PrincipalID string `json:"PrincipalId"`
 }
 
 type EventRequestParams struct {
@@ -63,22 +63,22 @@ type EventRequestParams struct {
 }
 
 type EventResponseElements struct {
-	RequestId string `json:"x-amz-request-id"`
-	HostId    string `json:"x-amz-id-2"`
+	RequestID string `json:"x-amz-request-id"`
+	HostID    string `json:"x-amz-id-2"`
 }
 
-type ConfigurationId string
+type ConfigurationID string
 
 // This field will be changed after implementing per bucket notifications
 const (
-	ConfigurationIdKafka   ConfigurationId = "kafka-global"
-	ConfigurationIdNats    ConfigurationId = "nats-global"
-	ConfigurationIdWebhook ConfigurationId = "webhook-global"
+	ConfigurationIDKafka   ConfigurationID = "kafka-global"
+	ConfigurationIDNats    ConfigurationID = "nats-global"
+	ConfigurationIDWebhook ConfigurationID = "webhook-global"
 )
 
 type EventS3Data struct {
 	S3SchemaVersion string            `json:"s3SchemaVersion"`
-	ConfigurationId ConfigurationId   `json:"configurationId"`
+	ConfigurationID ConfigurationID   `json:"configurationId"`
 	Bucket          EventS3BucketData `json:"bucket"`
 	Object          EventObjectData   `json:"object"`
 }
@@ -102,7 +102,7 @@ type EventObjectData struct {
 	Key       string  `json:"key"`
 	Size      int64   `json:"size"`
 	ETag      *string `json:"eTag"`
-	VersionId *string `json:"versionId"`
+	VersionID *string `json:"versionId"`
 	Sequencer string  `json:"sequencer"`
 }
 
@@ -139,7 +139,7 @@ func InitEventSender(cfg *EventConfig) (S3EventSender, error) {
 	return evSender, err
 }
 
-func createEventSchema(ctx *fiber.Ctx, meta EventMeta, configId ConfigurationId) EventSchema {
+func createEventSchema(ctx *fiber.Ctx, meta EventMeta, configID ConfigurationID) EventSchema {
 	path := strings.Split(ctx.Path(), "/")
 	bucket, object := path[1], strings.Join(path[2:], "/")
 	acc := ctx.Locals("account").(auth.Account)
@@ -153,22 +153,22 @@ func createEventSchema(ctx *fiber.Ctx, meta EventMeta, configId ConfigurationId)
 				EventTime:    time.Now().Format(time.RFC3339),
 				EventName:    meta.EventName,
 				UserIdentity: EventUserIdentity{
-					PrincipalId: acc.Access,
+					PrincipalID: acc.Access,
 				},
 				RequestParameters: EventRequestParams{
 					SourceIPAddress: ctx.IP(),
 				},
 				ResponseElements: EventResponseElements{
-					RequestId: ctx.Get("X-Amz-Request-Id"),
-					HostId:    ctx.Get("X-Amz-Id-2"),
+					RequestID: ctx.Get("X-Amz-Request-Id"),
+					HostID:    ctx.Get("X-Amz-Id-2"),
 				},
 				S3: EventS3Data{
 					S3SchemaVersion: "1.0",
-					ConfigurationId: configId,
+					ConfigurationID: configID,
 					Bucket: EventS3BucketData{
 						Name: bucket,
 						OwnerIdentity: EventUserIdentity{
-							PrincipalId: meta.BucketOwner,
+							PrincipalID: meta.BucketOwner,
 						},
 						Arn: fmt.Sprintf("arn:aws:s3:::%v", strings.Join(path, "/")),
 					},
@@ -176,7 +176,7 @@ func createEventSchema(ctx *fiber.Ctx, meta EventMeta, configId ConfigurationId)
 						Key:       object,
 						Size:      meta.ObjectSize,
 						ETag:      meta.ObjectETag,
-						VersionId: meta.VersionId,
+						VersionID: meta.VersionID,
 						Sequencer: genSequencer(),
 					},
 				},

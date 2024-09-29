@@ -100,7 +100,7 @@ func (wl *WebhookLogger) Log(ctx *fiber.Ctx, err error, body []byte, meta LogMet
 	lf.Operation = meta.Action
 	lf.Key = object
 	lf.RequestURI = reqURI
-	lf.HttpStatus = httpStatus
+	lf.HTTPStatus = httpStatus
 	lf.ErrorCode = errorCode
 	lf.BytesSent = len(body)
 	lf.ObjectSize = meta.ObjectSize
@@ -114,7 +114,7 @@ func (wl *WebhookLogger) Log(ctx *fiber.Ctx, err error, body []byte, meta LogMet
 	lf.AuthenticationType = "AuthHeader"
 	lf.HostHeader = fmt.Sprintf("s3.%v.amazonaws.com", ctx.Locals("region").(string))
 	lf.AccessPointARN = fmt.Sprintf("arn:aws:s3:::%v", strings.Join(path, "/"))
-	lf.AclRequired = "Yes"
+	lf.ACLRequired = "Yes"
 
 	wl.sendLog(lf)
 }

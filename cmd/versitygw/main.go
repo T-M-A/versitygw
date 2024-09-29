@@ -58,10 +58,10 @@ var (
 	ldapURL, ldapBindDN, ldapPassword        string
 	ldapQueryBase, ldapObjClasses            string
 	ldapAccessAtr, ldapSecAtr, ldapRoleAtr   string
-	ldapUserIdAtr, ldapGroupIdAtr            string
+	ldapUserIDAtr, ldapGroupIDAtr            string
 	vaultEndpointURL, vaultSecretStoragePath string
 	vaultMountPath, vaultRootToken           string
-	vaultRoleId, vaultRoleSecret             string
+	vaultRoleID, vaultRoleSecret             string
 	vaultServerCert, vaultClientCert         string
 	vaultClientCertKey                       string
 	s3IamAccess, s3IamSecret                 string
@@ -347,13 +347,13 @@ func initFlags() []cli.Flag {
 			Name:        "iam-ldap-user-id-atr",
 			Usage:       "ldap server user id attribute name",
 			EnvVars:     []string{"VGW_IAM_LDAP_USER_ID_ATR"},
-			Destination: &ldapUserIdAtr,
+			Destination: &ldapUserIDAtr,
 		},
 		&cli.StringFlag{
 			Name:        "iam-ldap-group-id-atr",
 			Usage:       "ldap server user group id attribute name",
 			EnvVars:     []string{"VGW_IAM_LDAP_GROUP_ID_ATR"},
-			Destination: &ldapGroupIdAtr,
+			Destination: &ldapGroupIDAtr,
 		},
 		&cli.StringFlag{
 			Name:        "iam-vault-endpoint-url",
@@ -383,7 +383,7 @@ func initFlags() []cli.Flag {
 			Name:        "iam-vault-role-id",
 			Usage:       "vault server user role id",
 			EnvVars:     []string{"VGW_IAM_VAULT_ROLE_ID"},
-			Destination: &vaultRoleId,
+			Destination: &vaultRoleID,
 		},
 		&cli.StringFlag{
 			Name:        "iam-vault-role-secret",
@@ -602,13 +602,13 @@ func runGateway(ctx context.Context, be backend.Backend) error {
 		LDAPAccessAtr:          ldapAccessAtr,
 		LDAPSecretAtr:          ldapSecAtr,
 		LDAPRoleAtr:            ldapRoleAtr,
-		LDAPUserIdAtr:          ldapUserIdAtr,
-		LDAPGroupIdAtr:         ldapGroupIdAtr,
+		LDAPUserIDAtr:          ldapUserIDAtr,
+		LDAPGroupIDAtr:         ldapGroupIDAtr,
 		VaultEndpointURL:       vaultEndpointURL,
 		VaultSecretStoragePath: vaultSecretStoragePath,
 		VaultMountPath:         vaultMountPath,
 		VaultRootToken:         vaultRootToken,
-		VaultRoleId:            vaultRoleId,
+		VaultRoleID:            vaultRoleID,
 		VaultRoleSecret:        vaultRoleSecret,
 		VaultServerCert:        vaultServerCert,
 		VaultClientCert:        vaultClientCert,

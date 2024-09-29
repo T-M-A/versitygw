@@ -23,7 +23,7 @@ const (
 	BucketPolicyAccessTypeAllow BucketPolicyAccessType = "Allow"
 )
 
-// Checks policy statement Effect to be valid ("Deny", "Allow")
+// Validate Checks policy statement Effect to be valid ("Deny", "Allow")
 func (bpat BucketPolicyAccessType) Validate() error {
 	switch bpat {
 	case BucketPolicyAccessTypeAllow, BucketPolicyAccessTypeDeny:

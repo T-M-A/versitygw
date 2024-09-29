@@ -35,7 +35,7 @@ type LogMeta struct {
 	BucketOwner string
 	ObjectSize  int64
 	Action      string
-	HttpStatus  int
+	HTTPStatus  int
 }
 
 type LogConfig struct {
@@ -54,7 +54,7 @@ type LogFields struct {
 	Operation          string
 	Key                string
 	RequestURI         string
-	HttpStatus         int
+	HTTPStatus         int
 	ErrorCode          string
 	BytesSent          int
 	ObjectSize         int64
@@ -70,7 +70,7 @@ type LogFields struct {
 	HostHeader         string
 	TLSVersion         string
 	AccessPointARN     string
-	AclRequired        string
+	ACLRequired        string
 }
 
 type AdminLogFields struct {
@@ -80,7 +80,7 @@ type AdminLogFields struct {
 	RequestID          string
 	Operation          string
 	RequestURI         string
-	HttpStatus         int
+	HTTPStatus         int
 	ErrorCode          string
 	BytesSent          int
 	TotalTime          int64

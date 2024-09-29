@@ -34,9 +34,9 @@ type Backend interface {
 	// bucket operations
 	ListBuckets(_ context.Context, owner string, isAdmin bool) (s3response.ListAllMyBucketsResult, error)
 	HeadBucket(context.Context, *s3.HeadBucketInput) (*s3.HeadBucketOutput, error)
-	GetBucketAcl(context.Context, *s3.GetBucketAclInput) ([]byte, error)
+	GetBucketACL(context.Context, *s3.GetBucketAclInput) ([]byte, error)
 	CreateBucket(_ context.Context, _ *s3.CreateBucketInput, defaultACL []byte) error
-	PutBucketAcl(_ context.Context, bucket string, data []byte) error
+	PutBucketACL(_ context.Context, bucket string, data []byte) error
 	DeleteBucket(context.Context, *s3.DeleteBucketInput) error
 	PutBucketVersioning(_ context.Context, bucket string, status types.BucketVersioningStatus) error
 	GetBucketVersioning(_ context.Context, bucket string) (s3response.GetBucketVersioningOutput, error)
@@ -60,14 +60,14 @@ type Backend interface {
 	PutObject(context.Context, *s3.PutObjectInput) (s3response.PutObjectOutput, error)
 	HeadObject(context.Context, *s3.HeadObjectInput) (*s3.HeadObjectOutput, error)
 	GetObject(context.Context, *s3.GetObjectInput) (*s3.GetObjectOutput, error)
-	GetObjectAcl(context.Context, *s3.GetObjectAclInput) (*s3.GetObjectAclOutput, error)
+	GetObjectACL(context.Context, *s3.GetObjectAclInput) (*s3.GetObjectAclOutput, error)
 	GetObjectAttributes(context.Context, *s3.GetObjectAttributesInput) (s3response.GetObjectAttributesResult, error)
 	CopyObject(context.Context, *s3.CopyObjectInput) (*s3.CopyObjectOutput, error)
 	ListObjects(context.Context, *s3.ListObjectsInput) (s3response.ListObjectsResult, error)
 	ListObjectsV2(context.Context, *s3.ListObjectsV2Input) (s3response.ListObjectsV2Result, error)
 	DeleteObject(context.Context, *s3.DeleteObjectInput) (*s3.DeleteObjectOutput, error)
 	DeleteObjects(context.Context, *s3.DeleteObjectsInput) (s3response.DeleteResult, error)
-	PutObjectAcl(context.Context, *s3.PutObjectAclInput) error
+	PutObjectACL(context.Context, *s3.PutObjectAclInput) error
 	ListObjectVersions(context.Context, *s3.ListObjectVersionsInput) (s3response.ListVersionsResult, error)
 
 	// special case object operations
@@ -87,10 +87,10 @@ type Backend interface {
 	// object lock operations
 	PutObjectLockConfiguration(_ context.Context, bucket string, config []byte) error
 	GetObjectLockConfiguration(_ context.Context, bucket string) ([]byte, error)
-	PutObjectRetention(_ context.Context, bucket, object, versionId string, bypass bool, retention []byte) error
-	GetObjectRetention(_ context.Context, bucket, object, versionId string) ([]byte, error)
-	PutObjectLegalHold(_ context.Context, bucket, object, versionId string, status bool) error
-	GetObjectLegalHold(_ context.Context, bucket, object, versionId string) (*bool, error)
+	PutObjectRetention(_ context.Context, bucket, object, versionID string, bypass bool, retention []byte) error
+	GetObjectRetention(_ context.Context, bucket, object, versionID string) ([]byte, error)
+	PutObjectLegalHold(_ context.Context, bucket, object, versionID string, status bool) error
+	GetObjectLegalHold(_ context.Context, bucket, object, versionID string) (*bool, error)
 
 	// non AWS actions
 	ChangeBucketOwner(_ context.Context, bucket string, acl []byte) error
@@ -114,13 +114,13 @@ func (BackendUnsupported) ListBuckets(context.Context, string, bool) (s3response
 func (BackendUnsupported) HeadBucket(context.Context, *s3.HeadBucketInput) (*s3.HeadBucketOutput, error) {
 	return nil, s3err.GetAPIError(s3err.ErrNotImplemented)
 }
-func (BackendUnsupported) GetBucketAcl(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
+func (BackendUnsupported) GetBucketACL(context.Context, *s3.GetBucketAclInput) ([]byte, error) {
 	return nil, s3err.GetAPIError(s3err.ErrNotImplemented)
 }
 func (BackendUnsupported) CreateBucket(context.Context, *s3.CreateBucketInput, []byte) error {
 	return s3err.GetAPIError(s3err.ErrNotImplemented)
 }
-func (BackendUnsupported) PutBucketAcl(_ context.Context, bucket string, data []byte) error {
+func (BackendUnsupported) PutBucketACL(_ context.Context, bucket string, data []byte) error {
 	return s3err.GetAPIError(s3err.ErrNotImplemented)
 }
 func (BackendUnsupported) DeleteBucket(context.Context, *s3.DeleteBucketInput) error {
@@ -182,7 +182,7 @@ func (BackendUnsupported) HeadObject(context.Context, *s3.HeadObjectInput) (*s3.
 func (BackendUnsupported) GetObject(context.Context, *s3.GetObjectInput) (*s3.GetObjectOutput, error) {
 	return nil, s3err.GetAPIError(s3err.ErrNotImplemented)
 }
-func (BackendUnsupported) GetObjectAcl(context.Context, *s3.GetObjectAclInput) (*s3.GetObjectAclOutput, error) {
+func (BackendUnsupported) GetObjectACL(context.Context, *s3.GetObjectAclInput) (*s3.GetObjectAclOutput, error) {
 	return nil, s3err.GetAPIError(s3err.ErrNotImplemented)
 }
 func (BackendUnsupported) GetObjectAttributes(context.Context, *s3.GetObjectAttributesInput) (s3response.GetObjectAttributesResult, error) {
@@ -203,7 +203,7 @@ func (BackendUnsupported) DeleteObject(context.Context, *s3.DeleteObjectInput) (
 func (BackendUnsupported) DeleteObjects(context.Context, *s3.DeleteObjectsInput) (s3response.DeleteResult, error) {
 	return s3response.DeleteResult{}, s3err.GetAPIError(s3err.ErrNotImplemented)
 }
-func (BackendUnsupported) PutObjectAcl(context.Context, *s3.PutObjectAclInput) error {
+func (BackendUnsupported) PutObjectACL(context.Context, *s3.PutObjectAclInput) error {
 	return s3err.GetAPIError(s3err.ErrNotImplemented)
 }
 
@@ -255,16 +255,16 @@ func (BackendUnsupported) PutObjectLockConfiguration(_ context.Context, bucket s
 func (BackendUnsupported) GetObjectLockConfiguration(_ context.Context, bucket string) ([]byte, error) {
 	return nil, s3err.GetAPIError(s3err.ErrNotImplemented)
 }
-func (BackendUnsupported) PutObjectRetention(_ context.Context, bucket, object, versionId string, bypass bool, retention []byte) error {
+func (BackendUnsupported) PutObjectRetention(_ context.Context, bucket, object, versionID string, bypass bool, retention []byte) error {
 	return s3err.GetAPIError(s3err.ErrNotImplemented)
 }
-func (BackendUnsupported) GetObjectRetention(_ context.Context, bucket, object, versionId string) ([]byte, error) {
+func (BackendUnsupported) GetObjectRetention(_ context.Context, bucket, object, versionID string) ([]byte, error) {
 	return nil, s3err.GetAPIError(s3err.ErrNotImplemented)
 }
-func (BackendUnsupported) PutObjectLegalHold(_ context.Context, bucket, object, versionId string, status bool) error {
+func (BackendUnsupported) PutObjectLegalHold(_ context.Context, bucket, object, versionID string, status bool) error {
 	return s3err.GetAPIError(s3err.ErrNotImplemented)
 }
-func (BackendUnsupported) GetObjectLegalHold(_ context.Context, bucket, object, versionId string) (*bool, error) {
+func (BackendUnsupported) GetObjectLegalHold(_ context.Context, bucket, object, versionID string) (*bool, error) {
 	return nil, s3err.GetAPIError(s3err.ErrNotImplemented)
 }
 

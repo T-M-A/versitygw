@@ -56,8 +56,8 @@ import (
 type key string
 
 const (
-	keyAclCapital          key = "Acl"
-	keyAclLower            key = "acl"
+	keyACLCapital          key = "Acl"
+	keyACLLower            key = "acl"
 	keyOwnership           key = "Ownership"
 	keyTags                key = "Tags"
 	keyPolicy              key = "Policy"
@@ -149,7 +149,7 @@ func (az *Azure) String() string {
 
 func (az *Azure) CreateBucket(ctx context.Context, input *s3.CreateBucketInput, acl []byte) error {
 	meta := map[string]*string{
-		string(keyAclCapital): backend.GetStringPtr(encodeBytes(acl)),
+		string(keyACLCapital): backend.GetStringPtr(encodeBytes(acl)),
 		string(keyOwnership):  backend.GetStringPtr(encodeBytes([]byte(input.ObjectOwnership))),
 	}
 
@@ -175,7 +175,7 @@ func (az *Azure) CreateBucket(ctx context.Context, input *s3.CreateBucketInput, 
 
 	_, err := az.client.CreateContainer(ctx, *input.Bucket, &container.CreateOptions{Metadata: meta})
 	if errors.Is(s3err.GetAPIError(s3err.ErrBucketAlreadyExists), azureErrToS3Err(err)) {
-		aclBytes, err := az.getContainerMetaData(ctx, *input.Bucket, string(keyAclCapital))
+		aclBytes, err := az.getContainerMetaData(ctx, *input.Bucket, string(keyACLCapital))
 		if err != nil {
 			return err
 		}
@@ -219,7 +219,7 @@ func (az *Azure) ListBuckets(ctx context.Context, owner string, isAdmin bool) (s
 					CreationDate: *v.Properties.LastModified,
 				})
 			} else {
-				acl, err := getAclFromMetadata(v.Metadata, keyAclLower)
+				acl, err := getACLFromMetadata(v.Metadata, keyACLLower)
 				if err != nil {
 					return result, err
 				}
@@ -351,26 +351,26 @@ func (az *Azure) PutBucketTagging(ctx context.Context, bucket string, tags map[s
 		return az.deleteContainerMetaData(ctx, bucket, string(keyTags))
 	}
 
-	tagsJson, err := json.Marshal(tags)
+	tagsJSON, err := json.Marshal(tags)
 	if err != nil {
 		return err
 	}
 
-	return az.setContainerMetaData(ctx, bucket, string(keyTags), tagsJson)
+	return az.setContainerMetaData(ctx, bucket, string(keyTags), tagsJSON)
 }
 
 func (az *Azure) GetBucketTagging(ctx context.Context, bucket string) (map[string]string, error) {
-	tagsJson, err := az.getContainerMetaData(ctx, bucket, string(keyTags))
+	tagsJSON, err := az.getContainerMetaData(ctx, bucket, string(keyTags))
 	if err != nil {
 		return nil, err
 	}
 
-	if len(tagsJson) == 0 {
+	if len(tagsJSON) == 0 {
 		return nil, s3err.GetAPIError(s3err.ErrBucketTaggingNotFound)
 	}
 
 	var tags map[string]string
-	err = json.Unmarshal(tagsJson, &tags)
+	err = json.Unmarshal(tagsJSON, &tags)
 	if err != nil {
 		return nil, err
 	}
@@ -441,7 +441,7 @@ func (az *Azure) HeadObject(ctx context.Context, input *s3.HeadObjectInput) (*s3
 		partsCount := int32(len(res.UncommittedBlocks))
 
 		for _, block := range res.UncommittedBlocks {
-			partNumber, err := decodeBlockId(*block.Name)
+			partNumber, err := decodeBlockID(*block.Name)
 			if err != nil {
 				return nil, err
 			}
@@ -865,9 +865,9 @@ func (az *Azure) CreateMultipartUpload(ctx context.Context, input *s3.CreateMult
 		meta[string(keyObjRetention)] = backend.GetStringPtr(string(retParsed))
 	}
 
-	uploadId := uuid.New().String()
+	uploadID := uuid.New().String()
 
-	tmpPath := createMetaTmpPath(*input.Key, uploadId)
+	tmpPath := createMetaTmpPath(*input.Key, uploadID)
 
 	opts := &blockblob.UploadBufferOptions{
 		Metadata: meta,
@@ -891,7 +891,7 @@ func (az *Azure) CreateMultipartUpload(ctx context.Context, input *s3.CreateMult
 	return s3response.InitiateMultipartUploadResult{
 		Bucket:   *input.Bucket,
 		Key:      *input.Key,
-		UploadId: uploadId,
+		UploadID: uploadID,
 	}, nil
 }
 
@@ -988,7 +988,7 @@ func (az *Azure) ListParts(ctx context.Context, input *s3.ListPartsInput) (s3res
 
 	parts := []s3response.Part{}
 	for _, el := range resp.UncommittedBlocks {
-		partNumber, err := decodeBlockId(*el.Name)
+		partNumber, err := decodeBlockID(*el.Name)
 		if err != nil {
 			return s3response.ListPartsResult{}, err
 		}
@@ -1032,7 +1032,7 @@ func (az *Azure) ListMultipartUploads(ctx context.Context, input *s3.ListMultipa
 	if input.UploadIdMarker != nil {
 		uploadIDMarker = *input.UploadIdMarker
 	}
-	uploadIdMarkerFound := false
+	uploadIDMarkerFound := false
 	prefix := string(metaTmpMultipartPrefix)
 
 	pager := client.NewListBlobsFlatPager(&container.ListBlobsFlatOptions{
@@ -1058,12 +1058,12 @@ func (az *Azure) ListMultipartUploads(ctx context.Context, input *s3.ListMultipa
 
 			path := filepath.Clean(*el.Name)
 			parts := strings.Split(path, "/")
-			uploadId := parts[2]
+			uploadID := parts[2]
 
 			uploads = append(uploads, s3response.Upload{
 				Key:          *key,
 				Initiated:    *el.Properties.CreationTime,
-				UploadID:     uploadId,
+				UploadID:     uploadID,
 				StorageClass: types.StorageClassStandard,
 			})
 		}
@@ -1072,7 +1072,7 @@ func (az *Azure) ListMultipartUploads(ctx context.Context, input *s3.ListMultipa
 	if input.MaxUploads != nil {
 		maxUploads = int(*input.MaxUploads)
 	}
-	if *input.KeyMarker != "" && uploadIDMarker != "" && !uploadIdMarkerFound {
+	if *input.KeyMarker != "" && uploadIDMarker != "" && !uploadIDMarkerFound {
 		return s3response.ListMultipartUploadsResult{
 			Bucket:         *input.Bucket,
 			Delimiter:      *input.Delimiter,
@@ -1186,13 +1186,13 @@ func (az *Azure) CompleteMultipartUpload(ctx context.Context, input *s3.Complete
 	}
 
 	slices.SortFunc(blockList.UncommittedBlocks, func(a *blockblob.Block, b *blockblob.Block) int {
-		ptNumber, _ := decodeBlockId(*a.Name)
-		nextPtNumber, _ := decodeBlockId(*b.Name)
+		ptNumber, _ := decodeBlockID(*a.Name)
+		nextPtNumber, _ := decodeBlockID(*b.Name)
 		return ptNumber - nextPtNumber
 	})
 
 	for i, block := range blockList.UncommittedBlocks {
-		ptNumber, err := decodeBlockId(*block.Name)
+		ptNumber, err := decodeBlockID(*block.Name)
 		if err != nil {
 			return nil, s3err.GetAPIError(s3err.ErrInvalidPart)
 		}
@@ -1233,12 +1233,12 @@ func (az *Azure) CompleteMultipartUpload(ctx context.Context, input *s3.Complete
 	}, nil
 }
 
-func (az *Azure) PutBucketAcl(ctx context.Context, bucket string, data []byte) error {
-	return az.setContainerMetaData(ctx, bucket, string(keyAclCapital), data)
+func (az *Azure) PutBucketACL(ctx context.Context, bucket string, data []byte) error {
+	return az.setContainerMetaData(ctx, bucket, string(keyACLCapital), data)
 }
 
-func (az *Azure) GetBucketAcl(ctx context.Context, input *s3.GetBucketAclInput) ([]byte, error) {
-	return az.getContainerMetaData(ctx, *input.Bucket, string(keyAclCapital))
+func (az *Azure) GetBucketACL(ctx context.Context, input *s3.GetBucketAclInput) ([]byte, error) {
+	return az.getContainerMetaData(ctx, *input.Bucket, string(keyACLCapital))
 }
 
 func (az *Azure) PutBucketPolicy(ctx context.Context, bucket string, policy []byte) error {
@@ -1299,7 +1299,7 @@ func (az *Azure) GetObjectLockConfiguration(ctx context.Context, bucket string) 
 	return cfg, nil
 }
 
-func (az *Azure) PutObjectRetention(ctx context.Context, bucket, object, versionId string, bypass bool, retention []byte) error {
+func (az *Azure) PutObjectRetention(ctx context.Context, bucket, object, versionID string, bypass bool, retention []byte) error {
 	cfg, err := az.getContainerMetaData(ctx, bucket, string(keyBucketLock))
 	if err != nil {
 		return azureErrToS3Err(err)
@@ -1366,7 +1366,7 @@ func (az *Azure) PutObjectRetention(ctx context.Context, bucket, object, version
 	return nil
 }
 
-func (az *Azure) GetObjectRetention(ctx context.Context, bucket, object, versionId string) ([]byte, error) {
+func (az *Azure) GetObjectRetention(ctx context.Context, bucket, object, versionID string) ([]byte, error) {
 	client, err := az.getBlobClient(bucket, object)
 	if err != nil {
 		return nil, err
@@ -1384,7 +1384,7 @@ func (az *Azure) GetObjectRetention(ctx context.Context, bucket, object, version
 	return []byte(*retentionPtr), nil
 }
 
-func (az *Azure) PutObjectLegalHold(ctx context.Context, bucket, object, versionId string, status bool) error {
+func (az *Azure) PutObjectLegalHold(ctx context.Context, bucket, object, versionID string, status bool) error {
 	cfg, err := az.getContainerMetaData(ctx, bucket, string(keyBucketLock))
 	if err != nil {
 		return azureErrToS3Err(err)
@@ -1437,7 +1437,7 @@ func (az *Azure) PutObjectLegalHold(ctx context.Context, bucket, object, version
 	return nil
 }
 
-func (az *Azure) GetObjectLegalHold(ctx context.Context, bucket, object, versionId string) (*bool, error) {
+func (az *Azure) GetObjectLegalHold(ctx context.Context, bucket, object, versionID string) (*bool, error) {
 	client, err := az.getBlobClient(bucket, object)
 	if err != nil {
 		return nil, err
@@ -1458,7 +1458,7 @@ func (az *Azure) GetObjectLegalHold(ctx context.Context, bucket, object, version
 }
 
 func (az *Azure) ChangeBucketOwner(ctx context.Context, bucket string, acl []byte) error {
-	return az.PutBucketAcl(ctx, bucket, acl)
+	return az.PutBucketACL(ctx, bucket, acl)
 }
 
 // The action actually returns the containers owned by the user, who initialized the gateway
@@ -1472,7 +1472,7 @@ func (az *Azure) ListBucketsAndOwners(ctx context.Context) (buckets []s3response
 			return buckets, azureErrToS3Err(err)
 		}
 		for _, v := range resp.ContainerItems {
-			acl, err := getAclFromMetadata(v.Metadata, keyAclLower)
+			acl, err := getACLFromMetadata(v.Metadata, keyACLLower)
 			if err != nil {
 				return buckets, err
 			}
@@ -1613,7 +1613,7 @@ func blockIDInt32ToBase64(blockID int32) string {
 }
 
 // Decodes Base64 encoded string to integer
-func decodeBlockId(blockID string) (int, error) {
+func decodeBlockID(blockID string) (int, error) {
 	slice, err := base64.StdEncoding.DecodeString(blockID)
 	if err != nil {
 		return 0, nil
@@ -1717,7 +1717,7 @@ func (az *Azure) deleteContainerMetaData(ctx context.Context, bucket, key string
 	return nil
 }
 
-func getAclFromMetadata(meta map[string]*string, key key) (*auth.ACL, error) {
+func getACLFromMetadata(meta map[string]*string, key key) (*auth.ACL, error) {
 	data, ok := meta[string(key)]
 	if !ok {
 		return nil, s3err.GetAPIError(s3err.ErrInternalError)
@@ -1747,7 +1747,7 @@ func isMetaSame(azMeta map[string]*string, awsMeta map[string]string) bool {
 	}
 
 	for key, val := range azMeta {
-		if key == string(keyAclCapital) || key == string(keyAclLower) {
+		if key == string(keyACLCapital) || key == string(keyACLLower) {
 			continue
 		}
 		awsVal, ok := awsMeta[key]
@@ -1759,14 +1759,14 @@ func isMetaSame(azMeta map[string]*string, awsMeta map[string]string) bool {
 	return true
 }
 
-func createMetaTmpPath(obj, uploadId string) string {
+func createMetaTmpPath(obj, uploadID string) string {
 	objNameSum := sha256.Sum256([]byte(obj))
-	return filepath.Join(string(metaTmpMultipartPrefix), uploadId, fmt.Sprintf("%x", objNameSum))
+	return filepath.Join(string(metaTmpMultipartPrefix), uploadID, fmt.Sprintf("%x", objNameSum))
 }
 
 // Checks if the multipart upload existis with the given bucket, key and uploadId
-func (az *Azure) checkIfMpExists(ctx context.Context, bucket, obj, uploadId string) error {
-	tmpPath := createMetaTmpPath(obj, uploadId)
+func (az *Azure) checkIfMpExists(ctx context.Context, bucket, obj, uploadID string) error {
+	tmpPath := createMetaTmpPath(obj, uploadID)
 	blobClient, err := az.getBlobClient(bucket, tmpPath)
 	if err != nil {
 		return err

@@ -440,12 +440,12 @@ func (s *ScoutFS) HeadObject(ctx context.Context, input *s3.HeadObjectInput) (*s
 	object := *input.Key
 
 	if input.PartNumber != nil {
-		uploadId, sum, err := s.retrieveUploadId(bucket, object)
+		uploadID, sum, err := s.retrieveUploadID(bucket, object)
 		if err != nil {
 			return nil, err
 		}
 
-		ents, err := os.ReadDir(filepath.Join(bucket, metaTmpMultipartDir, fmt.Sprintf("%x", sum), uploadId))
+		ents, err := os.ReadDir(filepath.Join(bucket, metaTmpMultipartDir, fmt.Sprintf("%x", sum), uploadID))
 		if errors.Is(err, fs.ErrNotExist) {
 			return nil, s3err.GetAPIError(s3err.ErrNoSuchKey)
 		}
@@ -453,7 +453,7 @@ func (s *ScoutFS) HeadObject(ctx context.Context, input *s3.HeadObjectInput) (*s
 			return nil, fmt.Errorf("read parts: %w", err)
 		}
 
-		partPath := filepath.Join(metaTmpMultipartDir, fmt.Sprintf("%x", sum), uploadId, fmt.Sprintf("%v", *input.PartNumber))
+		partPath := filepath.Join(metaTmpMultipartDir, fmt.Sprintf("%x", sum), uploadID, fmt.Sprintf("%v", *input.PartNumber))
 
 		part, err := os.Stat(filepath.Join(bucket, partPath))
 		if errors.Is(err, fs.ErrNotExist) {
@@ -534,7 +534,7 @@ func (s *ScoutFS) HeadObject(ctx context.Context, input *s3.HeadObjectInput) (*s
 		if err != nil {
 			return nil, fmt.Errorf("stat more: %w", err)
 		}
-		if st.Offline_blocks != 0 {
+		if st.OfflineBlocks != 0 {
 			stclass = types.StorageClassGlacier
 			requestOngoing = stageNotInProgress
 
@@ -589,7 +589,7 @@ func (s *ScoutFS) HeadObject(ctx context.Context, input *s3.HeadObjectInput) (*s
 	}, nil
 }
 
-func (s *ScoutFS) retrieveUploadId(bucket, object string) (string, [32]byte, error) {
+func (s *ScoutFS) retrieveUploadID(bucket, object string) (string, [32]byte, error) {
 	sum := sha256.Sum256([]byte(object))
 	objdir := filepath.Join(bucket, metaTmpMultipartDir, fmt.Sprintf("%x", sum))
 
@@ -666,7 +666,7 @@ func (s *ScoutFS) GetObject(_ context.Context, input *s3.GetObjectInput) (*s3.Ge
 		if err != nil {
 			return nil, fmt.Errorf("stat more: %w", err)
 		}
-		if st.Offline_blocks != 0 {
+		if st.OfflineBlocks != 0 {
 			return nil, s3err.GetAPIError(s3err.ErrInvalidObjectState)
 		}
 	}
@@ -900,7 +900,7 @@ func (s *ScoutFS) fileToObj(bucket string) backend.GetObjFunc {
 			if err != nil {
 				return s3response.Object{}, fmt.Errorf("stat more: %w", err)
 			}
-			if st.Offline_blocks != 0 {
+			if st.OfflineBlocks != 0 {
 				sc = types.ObjectStorageClassGlacier
 			}
 		}

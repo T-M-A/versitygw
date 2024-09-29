@@ -24,7 +24,7 @@ func (p Principals) Add(key string) {
 	p[key] = struct{}{}
 }
 
-// Override UnmarshalJSON method to decode both []string and string properties
+// UnmarshalJSON  Override UnmarshalJSON method to decode both []string and string properties
 func (p *Principals) UnmarshalJSON(data []byte) error {
 	ss := []string{}
 	var s string

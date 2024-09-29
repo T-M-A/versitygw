@@ -253,21 +253,21 @@ type WalkVersioningResults struct {
 	DelMarkers          []types.DeleteMarkerEntry
 	Truncated           bool
 	NextMarker          string
-	NextVersionIdMarker string
+	NextVersionIDMarker string
 }
 
 type ObjVersionFuncResult struct {
 	ObjectVersions      []types.ObjectVersion
 	DelMarkers          []types.DeleteMarkerEntry
-	NextVersionIdMarker string
+	NextVersionIDMarker string
 	Truncated           bool
 }
 
-type GetVersionsFunc func(path, versionIdMarker string, pastVersionIdMarker *bool, availableObjCount int, d fs.DirEntry) (*ObjVersionFuncResult, error)
+type GetVersionsFunc func(path, versionIDMarker string, pastVersionIDMarker *bool, availableObjCount int, d fs.DirEntry) (*ObjVersionFuncResult, error)
 
 // WalkVersions walks the supplied fs.FS and returns results compatible with
 // ListObjectVersions action response
-func WalkVersions(ctx context.Context, fileSystem fs.FS, prefix, delimiter, keyMarker, versionIdMarker string, max int, getObj GetVersionsFunc, skipdirs []string) (WalkVersioningResults, error) {
+func WalkVersions(ctx context.Context, fileSystem fs.FS, prefix, delimiter, keyMarker, versionIDMarker string, max int, getObj GetVersionsFunc, skipdirs []string) (WalkVersioningResults, error) {
 	cpmap := make(map[string]struct{})
 	var objects []types.ObjectVersion
 	var delMarkers []types.DeleteMarkerEntry
@@ -277,10 +277,10 @@ func WalkVersions(ctx context.Context, fileSystem fs.FS, prefix, delimiter, keyM
 		pastMarker = true
 	}
 	var nextMarker string
-	var nextVersionIdMarker string
+	var nextVersionIDMarker string
 	var truncated bool
 
-	pastVersionIdMarker := versionIdMarker == ""
+	pastVersionIDMarker := versionIDMarker == ""
 
 	err := fs.WalkDir(fileSystem, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -320,7 +320,7 @@ func WalkVersions(ctx context.Context, fileSystem fs.FS, prefix, delimiter, keyM
 				return fs.SkipDir
 			}
 
-			res, err := getObj(path, versionIdMarker, &pastVersionIdMarker, max-len(objects)-len(delMarkers)-len(cpmap), d)
+			res, err := getObj(path, versionIDMarker, &pastVersionIDMarker, max-len(objects)-len(delMarkers)-len(cpmap), d)
 			if err == ErrSkipObj {
 				return nil
 			}
@@ -332,7 +332,7 @@ func WalkVersions(ctx context.Context, fileSystem fs.FS, prefix, delimiter, keyM
 			if res.Truncated {
 				truncated = true
 				nextMarker = path
-				nextVersionIdMarker = res.NextVersionIdMarker
+				nextVersionIDMarker = res.NextVersionIDMarker
 				return fs.SkipAll
 			}
 
@@ -347,7 +347,7 @@ func WalkVersions(ctx context.Context, fileSystem fs.FS, prefix, delimiter, keyM
 		if delimiter == "" {
 			// If no delimiter specified, then all files with matching
 			// prefix are included in results
-			res, err := getObj(path, versionIdMarker, &pastVersionIdMarker, max-len(objects)-len(delMarkers)-len(cpmap), d)
+			res, err := getObj(path, versionIDMarker, &pastVersionIDMarker, max-len(objects)-len(delMarkers)-len(cpmap), d)
 			if err == ErrSkipObj {
 				return nil
 			}
@@ -359,7 +359,7 @@ func WalkVersions(ctx context.Context, fileSystem fs.FS, prefix, delimiter, keyM
 			if res.Truncated {
 				truncated = true
 				nextMarker = path
-				nextVersionIdMarker = res.NextVersionIdMarker
+				nextVersionIDMarker = res.NextVersionIDMarker
 				return fs.SkipAll
 			}
 
@@ -390,7 +390,7 @@ func WalkVersions(ctx context.Context, fileSystem fs.FS, prefix, delimiter, keyM
 		suffix := strings.TrimPrefix(path, prefix)
 		before, _, found := strings.Cut(suffix, delimiter)
 		if !found {
-			res, err := getObj(path, versionIdMarker, &pastVersionIdMarker, max-len(objects)-len(delMarkers)-len(cpmap), d)
+			res, err := getObj(path, versionIDMarker, &pastVersionIDMarker, max-len(objects)-len(delMarkers)-len(cpmap), d)
 			if err == ErrSkipObj {
 				return nil
 			}
@@ -403,7 +403,7 @@ func WalkVersions(ctx context.Context, fileSystem fs.FS, prefix, delimiter, keyM
 			if res.Truncated {
 				truncated = true
 				nextMarker = path
-				nextVersionIdMarker = res.NextVersionIdMarker
+				nextVersionIDMarker = res.NextVersionIDMarker
 				return fs.SkipAll
 			}
 			return nil
@@ -445,6 +445,6 @@ func WalkVersions(ctx context.Context, fileSystem fs.FS, prefix, delimiter, keyM
 		DelMarkers:          delMarkers,
 		Truncated:           truncated,
 		NextMarker:          nextMarker,
-		NextVersionIdMarker: nextVersionIdMarker,
+		NextVersionIDMarker: nextVersionIDMarker,
 	}, nil
 }

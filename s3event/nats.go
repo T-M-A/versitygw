@@ -79,9 +79,9 @@ func (ns *NatsEventSender) SendEvent(ctx *fiber.Ctx, meta EventMeta) {
 		// Events aren't send in correct order
 		for _, obj := range dObj.Objects {
 			key := *obj.Key
-			schema := createEventSchema(ctx, meta, ConfigurationIdWebhook)
+			schema := createEventSchema(ctx, meta, ConfigurationIDWebhook)
 			schema.Records[0].S3.Object.Key = key
-			schema.Records[0].S3.Object.VersionId = obj.VersionId
+			schema.Records[0].S3.Object.VersionID = obj.VersionId
 
 			go ns.send(schema)
 		}
@@ -89,7 +89,7 @@ func (ns *NatsEventSender) SendEvent(ctx *fiber.Ctx, meta EventMeta) {
 		return
 	}
 
-	schema := createEventSchema(ctx, meta, ConfigurationIdWebhook)
+	schema := createEventSchema(ctx, meta, ConfigurationIDWebhook)
 
 	go ns.send(schema)
 }

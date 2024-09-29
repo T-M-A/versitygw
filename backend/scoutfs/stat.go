@@ -15,11 +15,11 @@
 package scoutfs
 
 type stat struct {
-	Meta_seq       uint64
-	Data_seq       uint64
-	Data_version   uint64
-	Online_blocks  uint64
-	Offline_blocks uint64
-	Crtime_sec     uint64
-	Crtime_nsec    uint32
+	MetaSeq       uint64
+	DataSeq       uint64
+	DataVersion   uint64
+	OnlineBlocks  uint64
+	OfflineBlocks uint64
+	CrtimeSec     uint64
+	CrtimeNsec    uint32
 }

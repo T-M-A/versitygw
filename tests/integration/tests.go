@@ -1611,25 +1611,25 @@ func CreateBucket_invalid_bucket_name(s *S3Conf) error {
 	testName := "CreateBucket_invalid_bucket_name"
 	runF(testName)
 	err := setup(s, "aa")
-	if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketName)); err != nil {
+	if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketName)); err != nil {
 		failF("%v: %v", testName, err)
 		return fmt.Errorf("%v: %w", testName, err)
 	}
 
 	err = setup(s, ".gitignore")
-	if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketName)); err != nil {
+	if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketName)); err != nil {
 		failF("%v: %v", testName, err)
 		return fmt.Errorf("%v: %w", testName, err)
 	}
 
 	err = setup(s, "my-bucket.")
-	if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketName)); err != nil {
+	if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketName)); err != nil {
 		failF("%v: %v", testName, err)
 		return fmt.Errorf("%v: %w", testName, err)
 	}
 
 	err = setup(s, "bucket-%")
-	if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketName)); err != nil {
+	if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketName)); err != nil {
 		failF("%v: %v", testName, err)
 		return fmt.Errorf("%v: %w", testName, err)
 	}
@@ -1655,7 +1655,7 @@ func CreateBucket_as_user(s *S3Conf) error {
 	}
 
 	err = setup(&cfg, getBucketName())
-	if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
+	if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
 		failF("%v: %v", testName, err)
 		return fmt.Errorf("%v: %w", testName, err)
 	}
@@ -1726,7 +1726,7 @@ func CreateBucket_invalid_ownership(s *S3Conf) error {
 
 	invalidOwnership := types.ObjectOwnership("invalid_ownership")
 	err := setup(s, getBucketName(), withOwnership(invalidOwnership))
-	if err := checkApiErr(err, s3err.APIError{
+	if err := checkAPIErr(err, s3err.APIError{
 		Code:           "InvalidArgument",
 		Description:    fmt.Sprintf("Invalid x-amz-object-ownership header: %v", invalidOwnership),
 		HTTPStatusCode: http.StatusBadRequest,
@@ -1752,7 +1752,7 @@ func CreateBucket_ownership_with_acl(s *S3Conf) error {
 		ACL:             types.BucketCannedACLPublicRead,
 	})
 	cancel()
-	if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketAclWithObjectOwnership)); err != nil {
+	if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketACLWithObjectOwnership)); err != nil {
 		failF("%v: %v", testName, err)
 		return fmt.Errorf("%v: %w", testName, err)
 	}
@@ -1930,7 +1930,7 @@ func HeadBucket_non_existing_bucket(s *S3Conf) error {
 			Bucket: &bcktName,
 		})
 		cancel()
-		if err := checkSdkApiErr(err, "NotFound"); err != nil {
+		if err := checkSdkAPIErr(err, "NotFound"); err != nil {
 			return err
 		}
 		return nil
@@ -2176,7 +2176,7 @@ func DeleteBucket_non_existing_bucket(s *S3Conf) error {
 		Bucket: &bucket,
 	})
 	cancel()
-	if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+	if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 		failF("%v: %v", testName, err)
 		return fmt.Errorf("%v: %w", testName, err)
 	}
@@ -2196,7 +2196,7 @@ func DeleteBucket_non_empty_bucket(s *S3Conf) error {
 			Bucket: &bucket,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrBucketNotEmpty)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrBucketNotEmpty)); err != nil {
 			return err
 		}
 
@@ -2255,7 +2255,7 @@ func PutBucketOwnershipControls_non_existing_bucket(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -2281,7 +2281,7 @@ func PutBucketOwnershipControls_multiple_rules(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrMalformedXML)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrMalformedXML)); err != nil {
 			return err
 		}
 
@@ -2304,7 +2304,7 @@ func PutBucketOwnershipControls_invalid_ownership(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrMalformedXML)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrMalformedXML)); err != nil {
 			return err
 		}
 
@@ -2343,7 +2343,7 @@ func GetBucketOwnershipControls_non_existing_bucket(s *S3Conf) error {
 			Bucket: getPtr(getBucketName()),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -2421,7 +2421,7 @@ func DeleteBucketOwnershipControls_non_existing_bucket(s *S3Conf) error {
 			Bucket: getPtr(getBucketName()),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -2446,7 +2446,7 @@ func DeleteBucketOwnershipControls_success(s *S3Conf) error {
 			Bucket: &bucket,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrOwnershipControlsNotFound)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrOwnershipControlsNotFound)); err != nil {
 			return err
 		}
 
@@ -2463,7 +2463,7 @@ func PutBucketTagging_non_existing_bucket(s *S3Conf) error {
 			Tagging: &types.Tagging{TagSet: []types.Tag{}},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -2481,7 +2481,7 @@ func PutBucketTagging_long_tags(s *S3Conf) error {
 			Bucket:  &bucket,
 			Tagging: &tagging})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidTag)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidTag)); err != nil {
 			return err
 		}
 
@@ -2492,7 +2492,7 @@ func PutBucketTagging_long_tags(s *S3Conf) error {
 			Bucket:  &bucket,
 			Tagging: &tagging})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidTag)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidTag)); err != nil {
 			return err
 		}
 
@@ -2526,7 +2526,7 @@ func GetBucketTagging_non_existing_bucket(s *S3Conf) error {
 			Bucket: getPtr(getBucketName()),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 		return nil
@@ -2541,7 +2541,7 @@ func GetBucketTagging_unset_tags(s *S3Conf) error {
 			Bucket: &bucket,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrBucketTaggingNotFound)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrBucketTaggingNotFound)); err != nil {
 			return err
 		}
 		return nil
@@ -2587,7 +2587,7 @@ func DeleteBucketTagging_non_existing_object(s *S3Conf) error {
 			Bucket: getPtr(getBucketName()),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 		return nil
@@ -2682,7 +2682,7 @@ func PutObject_non_existing_bucket(s *S3Conf) error {
 	testName := "PutObject_non_existing_bucket"
 	return actionHandler(s, testName, func(s3client *s3.Client, bucket string) error {
 		_, err := putObjects(s3client, []string{"my-obj"}, "non-existing-bucket")
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 		return nil
@@ -2741,7 +2741,7 @@ func PutObject_invalid_long_tags(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidTag)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidTag)); err != nil {
 			return err
 		}
 
@@ -2755,7 +2755,7 @@ func PutObject_invalid_long_tags(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidTag)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidTag)); err != nil {
 			return err
 		}
 
@@ -2775,7 +2775,7 @@ func PutObject_missing_object_lock_retention_config(s *S3Conf) error {
 			ObjectLockMode: types.ObjectLockModeCompliance,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrObjectLockInvalidHeaders)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrObjectLockInvalidHeaders)); err != nil {
 			return err
 		}
 
@@ -2788,7 +2788,7 @@ func PutObject_missing_object_lock_retention_config(s *S3Conf) error {
 			ObjectLockRetainUntilDate: &retainDate,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrObjectLockInvalidHeaders)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrObjectLockInvalidHeaders)); err != nil {
 			return err
 		}
 
@@ -2883,7 +2883,7 @@ func PutObject_invalid_credentials(s *S3Conf) error {
 		newconf.awsSecret = newconf.awsSecret + "badpassword"
 		client := s3.NewFromConfig(newconf.Config())
 		_, err := putObjects(client, []string{"my-obj"}, bucket)
-		return checkApiErr(err, s3err.GetAPIError(s3err.ErrSignatureDoesNotMatch))
+		return checkAPIErr(err, s3err.GetAPIError(s3err.ErrSignatureDoesNotMatch))
 	})
 }
 
@@ -2896,7 +2896,7 @@ func HeadObject_non_existing_object(s *S3Conf) error {
 			Key:    getPtr("my-obj"),
 		})
 		cancel()
-		if err := checkSdkApiErr(err, "NotFound"); err != nil {
+		if err := checkSdkAPIErr(err, "NotFound"); err != nil {
 			return err
 		}
 		return nil
@@ -2914,7 +2914,7 @@ func HeadObject_invalid_part_number(s *S3Conf) error {
 			PartNumber: &partNumber,
 		})
 		cancel()
-		if err := checkSdkApiErr(err, "BadRequest"); err != nil {
+		if err := checkSdkAPIErr(err, "BadRequest"); err != nil {
 			return err
 		}
 		return nil
@@ -2932,7 +2932,7 @@ func HeadObject_non_existing_mp(s *S3Conf) error {
 			PartNumber: &partNumber,
 		})
 		cancel()
-		if err := checkSdkApiErr(err, "NotFound"); err != nil {
+		if err := checkSdkAPIErr(err, "NotFound"); err != nil {
 			return err
 		}
 		return nil
@@ -3009,7 +3009,7 @@ func HeadObject_non_existing_dir_object(s *S3Conf) error {
 			Key:    &obj,
 		})
 		defer cancel()
-		if err := checkSdkApiErr(err, "NotFound"); err != nil {
+		if err := checkSdkAPIErr(err, "NotFound"); err != nil {
 			return err
 		}
 
@@ -3038,7 +3038,7 @@ func HeadObject_directory_object_noslash(s *S3Conf) error {
 			Key:    &obj,
 		})
 		cancel()
-		if err := checkSdkApiErr(err, "NotFound"); err != nil {
+		if err := checkSdkAPIErr(err, "NotFound"); err != nil {
 			return err
 		}
 
@@ -3163,7 +3163,7 @@ func GetObjectAttributes_non_existing_bucket(s *S3Conf) error {
 			ObjectAttributes: []types.ObjectAttributes{},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -3181,7 +3181,7 @@ func GetObjectAttributes_non_existing_object(s *S3Conf) error {
 			ObjectAttributes: []types.ObjectAttributes{},
 		})
 		cancel()
-		if err := checkSdkApiErr(err, "NoSuchKey"); err != nil {
+		if err := checkSdkAPIErr(err, "NoSuchKey"); err != nil {
 			return err
 		}
 
@@ -3315,7 +3315,7 @@ func GetObject_invalid_ranges(s *S3Conf) error {
 			Range:  getPtr("bytes=invalid-range"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidRange)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidRange)); err != nil {
 			return err
 		}
 
@@ -3326,7 +3326,7 @@ func GetObject_invalid_ranges(s *S3Conf) error {
 			Range:  getPtr("bytes=33-10"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidRange)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidRange)); err != nil {
 			return err
 		}
 
@@ -3602,7 +3602,7 @@ func GetObject_non_existing_dir_object(s *S3Conf) error {
 			Key:    &obj,
 		})
 		defer cancel()
-		if err := checkSdkApiErr(err, "NoSuchKey"); err != nil {
+		if err := checkSdkAPIErr(err, "NoSuchKey"); err != nil {
 			return err
 		}
 		return nil
@@ -3618,7 +3618,7 @@ func ListObjects_non_existing_bucket(s *S3Conf) error {
 			Bucket: &bckt,
 		})
 		cancel()
-		if err := checkSdkApiErr(err, "NoSuchBucket"); err != nil {
+		if err := checkSdkAPIErr(err, "NoSuchBucket"); err != nil {
 			return err
 		}
 		return nil
@@ -3753,7 +3753,7 @@ func ListObjects_invalid_max_keys(s *S3Conf) error {
 			MaxKeys: &maxKeys,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidMaxKeys)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidMaxKeys)); err != nil {
 			return err
 		}
 
@@ -4376,7 +4376,7 @@ func DeleteObject_success(s *S3Conf) error {
 			Key:    &obj,
 		})
 		defer cancel()
-		if err := checkSdkApiErr(err, "NoSuchKey"); err != nil {
+		if err := checkSdkAPIErr(err, "NoSuchKey"); err != nil {
 			return err
 		}
 		return nil
@@ -4557,7 +4557,7 @@ func CopyObject_non_existing_dst_bucket(s *S3Conf) error {
 			CopySource: getPtr("bucket/obj"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 		return nil
@@ -4608,7 +4608,7 @@ func CopyObject_not_owned_source_bucket(s *S3Conf) error {
 			CopySource: getPtr(fmt.Sprintf("%v/%v", bucket, srcObj)),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
 			return err
 		}
 
@@ -4635,7 +4635,7 @@ func CopyObject_copy_to_itself(s *S3Conf) error {
 			CopySource: getPtr(fmt.Sprintf("%v/%v", bucket, obj)),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidCopyDest)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidCopyDest)); err != nil {
 			return err
 		}
 		return nil
@@ -4658,7 +4658,7 @@ func CopyObject_copy_to_itself_invalid_directive(s *S3Conf) error {
 			MetadataDirective: types.MetadataDirective("invalid"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidMetadataDirective)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidMetadataDirective)); err != nil {
 			return err
 		}
 		return nil
@@ -4827,7 +4827,7 @@ func CopyObject_non_existing_dir_object(s *S3Conf) error {
 			CopySource: getPtr(fmt.Sprintf("%v/%v", bucket, obj)),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchKey)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchKey)); err != nil {
 			return err
 		}
 
@@ -4910,7 +4910,7 @@ func PutObjectTagging_non_existing_object(s *S3Conf) error {
 			Key:     getPtr("my-obj"),
 			Tagging: &types.Tagging{TagSet: []types.Tag{}}})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchKey)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchKey)); err != nil {
 			return err
 		}
 		return nil
@@ -4933,7 +4933,7 @@ func PutObjectTagging_long_tags(s *S3Conf) error {
 			Key:     &obj,
 			Tagging: &tagging})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidTag)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidTag)); err != nil {
 			return err
 		}
 
@@ -4945,7 +4945,7 @@ func PutObjectTagging_long_tags(s *S3Conf) error {
 			Key:     &obj,
 			Tagging: &tagging})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidTag)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidTag)); err != nil {
 			return err
 		}
 
@@ -4986,7 +4986,7 @@ func GetObjectTagging_non_existing_object(s *S3Conf) error {
 			Key:    getPtr("my-obj"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchKey)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchKey)); err != nil {
 			return err
 		}
 		return nil
@@ -5007,7 +5007,7 @@ func GetObjectTagging_unset_tags(s *S3Conf) error {
 			Key:    &obj,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrBucketTaggingNotFound)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrBucketTaggingNotFound)); err != nil {
 			return err
 		}
 		return nil
@@ -5061,7 +5061,7 @@ func DeleteObjectTagging_non_existing_object(s *S3Conf) error {
 			Key:    getPtr("my-obj"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchKey)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchKey)); err != nil {
 			return err
 		}
 		return nil
@@ -5172,7 +5172,7 @@ func CreateMultipartUpload_non_existing_bucket(s *S3Conf) error {
 	return actionHandler(s, testName, func(s3client *s3.Client, bucket string) error {
 		bucketName := getBucketName()
 		_, err := createMp(s3client, bucketName, "my-obj")
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -5404,7 +5404,7 @@ func CreateMultipartUpload_with_object_lock_not_enabled(s *S3Conf) error {
 			ObjectLockLegalHoldStatus: types.ObjectLockLegalHoldStatusOn,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketObjectLockConfiguration)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketObjectLockConfiguration)); err != nil {
 			return err
 		}
 
@@ -5424,7 +5424,7 @@ func CreateMultipartUpload_with_object_lock_invalid_retention(s *S3Conf) error {
 			ObjectLockMode: types.ObjectLockModeGovernance,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrObjectLockInvalidHeaders)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrObjectLockInvalidHeaders)); err != nil {
 			return err
 		}
 
@@ -5435,7 +5435,7 @@ func CreateMultipartUpload_with_object_lock_invalid_retention(s *S3Conf) error {
 			ObjectLockRetainUntilDate: &retentionDate,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrObjectLockInvalidHeaders)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrObjectLockInvalidHeaders)); err != nil {
 			return err
 		}
 
@@ -5456,7 +5456,7 @@ func CreateMultipartUpload_past_retain_until_date(s *S3Conf) error {
 			ObjectLockRetainUntilDate: &rDate,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrPastObjectLockRetainDate)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrPastObjectLockRetainDate)); err != nil {
 			return err
 		}
 
@@ -5475,7 +5475,7 @@ func CreateMultipartUpload_with_invalid_tagging(s *S3Conf) error {
 			Tagging: getPtr("invalid_tag"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidTag)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidTag)); err != nil {
 			return err
 		}
 
@@ -5588,7 +5588,7 @@ func UploadPart_non_existing_bucket(s *S3Conf) error {
 			PartNumber: &partNumber,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -5608,7 +5608,7 @@ func UploadPart_invalid_part_number(s *S3Conf) error {
 			PartNumber: &partNumber,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidPart)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidPart)); err != nil {
 			return err
 		}
 		return nil
@@ -5627,7 +5627,7 @@ func UploadPart_non_existing_mp_upload(s *S3Conf) error {
 			PartNumber: &partNumber,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchUpload)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchUpload)); err != nil {
 			return err
 		}
 		return nil
@@ -5652,7 +5652,7 @@ func UploadPart_non_existing_key(s *S3Conf) error {
 			PartNumber: &partNumber,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchUpload)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchUpload)); err != nil {
 			return err
 		}
 		return nil
@@ -5701,7 +5701,7 @@ func UploadPartCopy_non_existing_bucket(s *S3Conf) error {
 			PartNumber: &partNumber,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 		return nil
@@ -5736,7 +5736,7 @@ func UploadPartCopy_incorrect_uploadId(s *S3Conf) error {
 			PartNumber: &partNumber,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchUpload)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchUpload)); err != nil {
 			return err
 		}
 
@@ -5777,7 +5777,7 @@ func UploadPartCopy_incorrect_object_key(s *S3Conf) error {
 			PartNumber: &partNumber,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchUpload)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchUpload)); err != nil {
 			return err
 		}
 
@@ -5803,7 +5803,7 @@ func UploadPartCopy_invalid_part_number(s *S3Conf) error {
 			PartNumber: &partNumber,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidPartNumber)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidPartNumber)); err != nil {
 			return err
 		}
 
@@ -5831,7 +5831,7 @@ func UploadPartCopy_invalid_copy_source(s *S3Conf) error {
 			PartNumber: &partNumber,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidCopySource)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidCopySource)); err != nil {
 			return err
 		}
 
@@ -5859,7 +5859,7 @@ func UploadPartCopy_non_existing_source_bucket(s *S3Conf) error {
 			PartNumber: &partNumber,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -5892,7 +5892,7 @@ func UploadPartCopy_non_existing_source_object_key(s *S3Conf) error {
 			PartNumber: &partNumber,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchKey)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchKey)); err != nil {
 			return err
 		}
 
@@ -6007,7 +6007,7 @@ func UploadPartCopy_by_range_invalid_range(s *S3Conf) error {
 			CopySourceRange: getPtr("invalid-range"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidRange)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidRange)); err != nil {
 			return err
 		}
 
@@ -6053,7 +6053,7 @@ func UploadPartCopy_greater_range_than_obj_size(s *S3Conf) error {
 			PartNumber:      &partNumber,
 		})
 		cancel()
-		if err := checkApiErr(err, backend.CreateExceedingRangeErr(int64(srcObjSize))); err != nil {
+		if err := checkAPIErr(err, backend.CreateExceedingRangeErr(int64(srcObjSize))); err != nil {
 			return err
 		}
 
@@ -6146,7 +6146,7 @@ func ListParts_incorrect_uploadId(s *S3Conf) error {
 			UploadId: getPtr("invalid uploadId"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchUpload)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchUpload)); err != nil {
 			return err
 		}
 
@@ -6170,7 +6170,7 @@ func ListParts_incorrect_object_key(s *S3Conf) error {
 			UploadId: out.UploadId,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchUpload)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchUpload)); err != nil {
 			return err
 		}
 
@@ -6287,7 +6287,7 @@ func ListMultipartUploads_non_existing_bucket(s *S3Conf) error {
 			Bucket: &bucketName,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -6324,7 +6324,7 @@ func ListMultipartUploads_invalid_max_uploads(s *S3Conf) error {
 			MaxUploads: &maxUploads,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidMaxKeys)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidMaxKeys)); err != nil {
 			return err
 		}
 
@@ -6506,7 +6506,7 @@ func AbortMultipartUpload_non_existing_bucket(s *S3Conf) error {
 			UploadId: getPtr("uploadId"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -6524,7 +6524,7 @@ func AbortMultipartUpload_incorrect_uploadId(s *S3Conf) error {
 			UploadId: getPtr("invalid uploadId"),
 		})
 		cancel()
-		if err := checkSdkApiErr(err, "NoSuchUpload"); err != nil {
+		if err := checkSdkAPIErr(err, "NoSuchUpload"); err != nil {
 			return err
 		}
 
@@ -6548,7 +6548,7 @@ func AbortMultipartUpload_incorrect_object_key(s *S3Conf) error {
 			UploadId: out.UploadId,
 		})
 		cancel()
-		if err := checkSdkApiErr(err, "NoSuchUpload"); err != nil {
+		if err := checkSdkAPIErr(err, "NoSuchUpload"); err != nil {
 			return err
 		}
 
@@ -6634,7 +6634,7 @@ func CompletedMultipartUpload_non_existing_bucket(s *S3Conf) error {
 			UploadId: getPtr("uploadId"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -6679,7 +6679,7 @@ func CompleteMultipartUpload_invalid_part_number(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidPart)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidPart)); err != nil {
 			return err
 		}
 
@@ -6723,7 +6723,7 @@ func CompleteMultipartUpload_invalid_ETag(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidPart)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidPart)); err != nil {
 			return err
 		}
 
@@ -6801,7 +6801,7 @@ func PutBucketAcl_non_existing_bucket(s *S3Conf) error {
 			Bucket: getPtr(getBucketName()),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -6819,7 +6819,7 @@ func PutBucketAcl_disabled(s *S3Conf) error {
 			GrantRead: &s.awsID,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrAclNotSupported)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrACLNotSupported)); err != nil {
 			return err
 		}
 		return nil
@@ -6834,7 +6834,7 @@ func PutBucketAcl_none_of_the_options_specified(s *S3Conf) error {
 			Bucket: &bucket,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrMissingSecurityHeader)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrMissingSecurityHeader)); err != nil {
 			return err
 		}
 		return nil
@@ -6851,7 +6851,7 @@ func PutBucketAcl_invalid_acl_canned_and_acp(s *S3Conf) error {
 			GrantRead: getPtr("user1"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrBothCannedAndHeaderGrants)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrBothCannedAndHeaderGrants)); err != nil {
 			return err
 		}
 
@@ -6881,7 +6881,7 @@ func PutBucketAcl_invalid_acl_canned_and_grants(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrUnexpectedContent)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrUnexpectedContent)); err != nil {
 			return err
 		}
 
@@ -6911,7 +6911,7 @@ func PutBucketAcl_invalid_acl_acp_and_grants(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrUnexpectedContent)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrUnexpectedContent)); err != nil {
 			return err
 		}
 
@@ -6956,7 +6956,7 @@ func PutBucketAcl_invalid_owner(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.APIError{
+		if err := checkAPIErr(err, s3err.APIError{
 			Code:           "InvalidArgument",
 			Description:    "Invalid id",
 			HTTPStatusCode: http.StatusBadRequest,
@@ -6987,7 +6987,7 @@ func PutBucketAcl_invalid_owner_not_in_body(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrMalformedACL)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrMalformedACL)); err != nil {
 			return err
 		}
 
@@ -7032,7 +7032,7 @@ func PutBucketAcl_success_access_denied(s *S3Conf) error {
 		userClient := s3.NewFromConfig(newConf.Config())
 
 		_, err = putObjects(userClient, []string{"my-obj"}, bucket)
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
 			return err
 		}
 
@@ -7096,7 +7096,7 @@ func PutBucketAcl_success_acp(s *S3Conf) error {
 		userClient := s3.NewFromConfig(newConf.Config())
 
 		_, err = putObjects(userClient, []string{"my-obj"}, bucket)
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
 			return err
 		}
 
@@ -7166,7 +7166,7 @@ func GetBucketAcl_non_existing_bucket(s *S3Conf) error {
 			Bucket: getPtr(getBucketName()),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -7342,7 +7342,7 @@ func GetBucketAcl_access_denied(s *S3Conf) error {
 			Bucket: &bucket,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
 			return err
 		}
 
@@ -7442,7 +7442,7 @@ func PutBucketPolicy_non_existing_bucket(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 		return nil
@@ -7464,7 +7464,7 @@ func PutBucketPolicy_empty_statement(s *S3Conf) error {
 			Policy: &doc,
 		})
 		cancel()
-		if err := checkApiErr(err, getMalformedPolicyError("Could not parse the policy: Statement is empty!")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Could not parse the policy: Statement is empty!")); err != nil {
 			return err
 		}
 		return nil
@@ -7483,7 +7483,7 @@ func PutBucketPolicy_invalid_effect(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, getMalformedPolicyError("Invalid effect: invalid_effect")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Invalid effect: invalid_effect")); err != nil {
 			return err
 		}
 		return nil
@@ -7502,7 +7502,7 @@ func PutBucketPolicy_empty_actions_string(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, getMalformedPolicyError("Policy has invalid action")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Policy has invalid action")); err != nil {
 			return err
 		}
 		return nil
@@ -7521,7 +7521,7 @@ func PutBucketPolicy_empty_actions_array(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, getMalformedPolicyError("Policy has invalid action")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Policy has invalid action")); err != nil {
 			return err
 		}
 		return nil
@@ -7540,7 +7540,7 @@ func PutBucketPolicy_invalid_action(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, getMalformedPolicyError("Policy has invalid action")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Policy has invalid action")); err != nil {
 			return err
 		}
 		return nil
@@ -7559,7 +7559,7 @@ func PutBucketPolicy_unsupported_action(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, getMalformedPolicyError("Policy has invalid action")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Policy has invalid action")); err != nil {
 			return err
 		}
 		return nil
@@ -7578,7 +7578,7 @@ func PutBucketPolicy_incorrect_action_wildcard_usage(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, getMalformedPolicyError("Policy has invalid action")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Policy has invalid action")); err != nil {
 			return err
 		}
 		return nil
@@ -7597,7 +7597,7 @@ func PutBucketPolicy_empty_principals_string(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, getMalformedPolicyError("Invalid principal in policy")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Invalid principal in policy")); err != nil {
 			return err
 		}
 		return nil
@@ -7616,7 +7616,7 @@ func PutBucketPolicy_empty_principals_array(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, getMalformedPolicyError("Invalid principal in policy")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Invalid principal in policy")); err != nil {
 			return err
 		}
 		return nil
@@ -7635,7 +7635,7 @@ func PutBucketPolicy_principals_aws_struct_empty_string(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, getMalformedPolicyError("Invalid principal in policy")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Invalid principal in policy")); err != nil {
 			return err
 		}
 		return nil
@@ -7654,7 +7654,7 @@ func PutBucketPolicy_principals_aws_struct_empty_string_slice(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, getMalformedPolicyError("Invalid principal in policy")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Invalid principal in policy")); err != nil {
 			return err
 		}
 		return nil
@@ -7673,7 +7673,7 @@ func PutBucketPolicy_principals_incorrect_wildcard_usage(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, getMalformedPolicyError("Invalid principal in policy")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Invalid principal in policy")); err != nil {
 			return err
 		}
 		return nil
@@ -7692,7 +7692,7 @@ func PutBucketPolicy_non_existing_principals(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, getMalformedPolicyError("Invalid principal in policy")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Invalid principal in policy")); err != nil {
 			return err
 		}
 
@@ -7712,7 +7712,7 @@ func PutBucketPolicy_empty_resources_string(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, getMalformedPolicyError("Policy has invalid resource")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Policy has invalid resource")); err != nil {
 			return err
 		}
 		return nil
@@ -7731,7 +7731,7 @@ func PutBucketPolicy_empty_resources_array(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, getMalformedPolicyError("Policy has invalid resource")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Policy has invalid resource")); err != nil {
 			return err
 		}
 		return nil
@@ -7751,7 +7751,7 @@ func PutBucketPolicy_invalid_resource_prefix(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, getMalformedPolicyError("Policy has invalid resource")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Policy has invalid resource")); err != nil {
 			return err
 		}
 		return nil
@@ -7771,7 +7771,7 @@ func PutBucketPolicy_invalid_resource_with_starting_slash(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, getMalformedPolicyError("Policy has invalid resource")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Policy has invalid resource")); err != nil {
 			return err
 		}
 		return nil
@@ -7811,7 +7811,7 @@ func PutBucketPolicy_incorrect_bucket_name(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, getMalformedPolicyError("Policy has invalid resource")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Policy has invalid resource")); err != nil {
 			return err
 		}
 		return nil
@@ -7831,7 +7831,7 @@ func PutBucketPolicy_object_action_on_bucket_resource(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, getMalformedPolicyError("Action does not apply to any resource(s) in statement")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Action does not apply to any resource(s) in statement")); err != nil {
 			return err
 		}
 		return nil
@@ -7851,7 +7851,7 @@ func PutBucketPolicy_bucket_action_on_object_resource(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, getMalformedPolicyError("Action does not apply to any resource(s) in statement")); err != nil {
+		if err := checkAPIErr(err, getMalformedPolicyError("Action does not apply to any resource(s) in statement")); err != nil {
 			return err
 		}
 		return nil
@@ -7906,7 +7906,7 @@ func GetBucketPolicy_non_existing_bucket(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 		return nil
@@ -7921,7 +7921,7 @@ func GetBucketPolicy_not_set(s *S3Conf) error {
 			Bucket: &bucket,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucketPolicy)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucketPolicy)); err != nil {
 			return err
 		}
 
@@ -7972,7 +7972,7 @@ func DeleteBucketPolicy_non_existing_bucket(s *S3Conf) error {
 		})
 		cancel()
 
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 		return nil
@@ -8020,7 +8020,7 @@ func DeleteBucketPolicy_success(s *S3Conf) error {
 			Bucket: &bucket,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucketPolicy)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucketPolicy)); err != nil {
 			return err
 		}
 
@@ -8037,7 +8037,7 @@ func PutObjectLockConfiguration_non_existing_bucket(s *S3Conf) error {
 			Bucket: getPtr(getBucketName()),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -8053,7 +8053,7 @@ func PutObjectLockConfiguration_empty_config(s *S3Conf) error {
 			Bucket: &bucket,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrMalformedXML)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrMalformedXML)); err != nil {
 			return err
 		}
 		return nil
@@ -8078,7 +8078,7 @@ func PutObjectLockConfiguration_not_enabled_on_bucket_creation(s *S3Conf) error 
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrObjectLockConfigurationNotAllowed)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrObjectLockConfigurationNotAllowed)); err != nil {
 			return err
 		}
 		return nil
@@ -8102,7 +8102,7 @@ func PutObjectLockConfiguration_invalid_status(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrMalformedXML)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrMalformedXML)); err != nil {
 			return err
 		}
 		return nil
@@ -8127,7 +8127,7 @@ func PutObjectLockConfiguration_invalid_mode(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrMalformedXML)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrMalformedXML)); err != nil {
 			return err
 		}
 		return nil
@@ -8152,7 +8152,7 @@ func PutObjectLockConfiguration_both_years_and_days(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrMalformedXML)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrMalformedXML)); err != nil {
 			return err
 		}
 		return nil
@@ -8177,7 +8177,7 @@ func PutObjectLockConfiguration_invalid_years_days(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrObjectLockInvalidRetentionPeriod)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrObjectLockInvalidRetentionPeriod)); err != nil {
 			return err
 		}
 		ctx, cancel = context.WithTimeout(context.Background(), shortTimeout)
@@ -8194,7 +8194,7 @@ func PutObjectLockConfiguration_invalid_years_days(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrObjectLockInvalidRetentionPeriod)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrObjectLockInvalidRetentionPeriod)); err != nil {
 			return err
 		}
 
@@ -8228,7 +8228,7 @@ func GetObjectLockConfiguration_non_existing_bucket(s *S3Conf) error {
 			Bucket: getPtr(getBucketName()),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -8244,7 +8244,7 @@ func GetObjectLockConfiguration_unset_config(s *S3Conf) error {
 			Bucket: &bucket,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrObjectLockConfigurationNotFound)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrObjectLockConfigurationNotFound)); err != nil {
 			return err
 		}
 
@@ -8313,7 +8313,7 @@ func PutObjectRetention_non_existing_bucket(s *S3Conf) error {
 			Key:    getPtr("my-obj"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -8339,7 +8339,7 @@ func PutObjectRetention_non_existing_object(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchKey)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchKey)); err != nil {
 			return err
 		}
 
@@ -8368,7 +8368,7 @@ func PutObjectRetention_unset_bucket_object_lock_config(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketObjectLockConfiguration)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketObjectLockConfiguration)); err != nil {
 			return err
 		}
 
@@ -8407,7 +8407,7 @@ func PutObjectRetention_disabled_bucket_object_lock_config(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketObjectLockConfiguration)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketObjectLockConfiguration)); err != nil {
 			return err
 		}
 
@@ -8434,7 +8434,7 @@ func PutObjectRetention_expired_retain_until_date(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrPastObjectLockRetainDate)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrPastObjectLockRetainDate)); err != nil {
 			return err
 		}
 
@@ -8456,7 +8456,7 @@ func PutObjectRetention_invalid_mode(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrMalformedXML)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrMalformedXML)); err != nil {
 			return err
 		}
 
@@ -8498,7 +8498,7 @@ func PutObjectRetention_overwrite_compliance_mode(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrMethodNotAllowed)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrMethodNotAllowed)); err != nil {
 			return err
 		}
 
@@ -8544,7 +8544,7 @@ func PutObjectRetention_overwrite_governance_without_bypass_specified(s *S3Conf)
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrMethodNotAllowed)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrMethodNotAllowed)); err != nil {
 			return err
 		}
 
@@ -8662,7 +8662,7 @@ func GetObjectRetention_non_existing_bucket(s *S3Conf) error {
 			Key:    getPtr("my-obj"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -8679,7 +8679,7 @@ func GetObjectRetention_non_existing_object(s *S3Conf) error {
 			Key:    getPtr("my-obj"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchKey)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchKey)); err != nil {
 			return err
 		}
 
@@ -8702,7 +8702,7 @@ func GetObjectRetention_unset_config(s *S3Conf) error {
 			Key:    &key,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchObjectLockConfiguration)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchObjectLockConfiguration)); err != nil {
 			return err
 		}
 
@@ -8780,7 +8780,7 @@ func PutObjectLegalHold_non_existing_bucket(s *S3Conf) error {
 			Key:    getPtr("my-obj"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -8804,7 +8804,7 @@ func PutObjectLegalHold_non_existing_object(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchKey)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchKey)); err != nil {
 			return err
 		}
 
@@ -8821,7 +8821,7 @@ func PutObjectLegalHold_invalid_body(s *S3Conf) error {
 			Key:    getPtr("my-obj"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidRequest)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidRequest)); err != nil {
 			return err
 		}
 
@@ -8841,7 +8841,7 @@ func PutObjectLegalHold_invalid_status(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrMalformedXML)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrMalformedXML)); err != nil {
 			return err
 		}
 
@@ -8868,7 +8868,7 @@ func PutObjectLegalHold_unset_bucket_object_lock_config(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketObjectLockConfiguration)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketObjectLockConfiguration)); err != nil {
 			return err
 		}
 
@@ -8905,7 +8905,7 @@ func PutObjectLegalHold_disabled_bucket_object_lock_config(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketObjectLockConfiguration)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidBucketObjectLockConfiguration)); err != nil {
 			return err
 		}
 
@@ -8957,7 +8957,7 @@ func GetObjectLegalHold_non_existing_bucket(s *S3Conf) error {
 			Key:    getPtr("my-obj"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -8974,7 +8974,7 @@ func GetObjectLegalHold_non_existing_object(s *S3Conf) error {
 			Key:    getPtr("my-obj"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchKey)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchKey)); err != nil {
 			return err
 		}
 
@@ -8997,7 +8997,7 @@ func GetObjectLegalHold_unset_config(s *S3Conf) error {
 			Key:    &key,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchObjectLockConfiguration)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchObjectLockConfiguration)); err != nil {
 			return err
 		}
 
@@ -9546,7 +9546,7 @@ func WORMProtection_object_lock_legal_hold_locked(s *S3Conf) error {
 		}
 
 		_, err = putObjects(s3client, []string{object}, bucket)
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrObjectLocked)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrObjectLocked)); err != nil {
 			return err
 		}
 
@@ -9637,7 +9637,7 @@ func AccessControl_default_ACL_user_access_denied(s *S3Conf) error {
 		cfg.awsSecret = usr.secret
 
 		_, err = putObjects(s3.NewFromConfig(cfg.Config()), []string{"my-obj"}, bucket)
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
 			return err
 		}
 
@@ -9663,7 +9663,7 @@ func AccessControl_default_ACL_userplus_access_denied(s *S3Conf) error {
 		cfg.awsSecret = usr.secret
 
 		_, err = putObjects(s3.NewFromConfig(cfg.Config()), []string{"my-obj"}, bucket)
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
 			return err
 		}
 
@@ -9742,7 +9742,7 @@ func AccessControl_bucket_resource_single_action(s *S3Conf) error {
 			Bucket: &bucket,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
 			return err
 		}
 
@@ -9753,7 +9753,7 @@ func AccessControl_bucket_resource_single_action(s *S3Conf) error {
 			Bucket: &bucket,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
 			return err
 		}
 
@@ -9802,7 +9802,7 @@ func AccessControl_bucket_resource_all_action(s *S3Conf) error {
 		user2Client := getUserS3Client(usr2, s)
 
 		_, err = putObjects(user2Client, []string{"my-obj"}, bucket)
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
 			return err
 		}
 
@@ -9858,7 +9858,7 @@ func AccessControl_single_object_resource_actions(s *S3Conf) error {
 			Bucket: &bucket,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
 			return err
 		}
 
@@ -9924,7 +9924,7 @@ func AccessControl_multi_statement_policy(s *S3Conf) error {
 			Bucket: &bucket,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrAccessDenied)); err != nil {
 			return err
 		}
 
@@ -10283,7 +10283,7 @@ func PutObject_overwrite_dir_obj(s *S3Conf) error {
 	testName := "PutObject_overwrite_dir_obj"
 	return actionHandler(s, testName, func(s3client *s3.Client, bucket string) error {
 		_, err := putObjects(s3client, []string{"foo/", "foo"}, bucket)
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrExistingObjectIsDirectory)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrExistingObjectIsDirectory)); err != nil {
 			return err
 		}
 		return nil
@@ -10294,7 +10294,7 @@ func PutObject_overwrite_file_obj(s *S3Conf) error {
 	testName := "PutObject_overwrite_file_obj"
 	return actionHandler(s, testName, func(s3client *s3.Client, bucket string) error {
 		_, err := putObjects(s3client, []string{"foo", "foo/"}, bucket)
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrObjectParentIsFile)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrObjectParentIsFile)); err != nil {
 			return err
 		}
 		return nil
@@ -10305,7 +10305,7 @@ func PutObject_overwrite_file_obj_with_nested_obj(s *S3Conf) error {
 	testName := "PutObject_overwrite_file_obj_with_nested_obj"
 	return actionHandler(s, testName, func(s3client *s3.Client, bucket string) error {
 		_, err := putObjects(s3client, []string{"foo", "foo/bar"}, bucket)
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrObjectParentIsFile)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrObjectParentIsFile)); err != nil {
 			return err
 		}
 		return nil
@@ -10319,7 +10319,7 @@ func PutObject_dir_obj_with_data(s *S3Conf) error {
 			Bucket: &bucket,
 			Key:    getPtr("obj/"),
 		}, s3client)
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrDirectoryObjectContainsData)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrDirectoryObjectContainsData)); err != nil {
 			return err
 		}
 		return nil
@@ -10330,7 +10330,7 @@ func CreateMultipartUpload_dir_obj(s *S3Conf) error {
 	testName := "CreateMultipartUpload_dir_obj"
 	return actionHandler(s, testName, func(s3client *s3.Client, bucket string) error {
 		_, err := createMp(s3client, bucket, "obj/")
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrDirectoryObjectContainsData)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrDirectoryObjectContainsData)); err != nil {
 			return err
 		}
 		return nil
@@ -10348,7 +10348,7 @@ func PutObject_name_too_long(s *S3Conf) error {
 			Key:    &key,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrKeyTooLong)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrKeyTooLong)); err != nil {
 			return err
 		}
 
@@ -10368,7 +10368,7 @@ func PutBucketVersioning_non_existing_bucket(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -10385,7 +10385,7 @@ func HeadObject_name_too_long(s *S3Conf) error {
 			Key:    getPtr(genRandString(300)),
 		})
 		cancel()
-		if err := checkSdkApiErr(err, "BadRequest"); err != nil {
+		if err := checkSdkAPIErr(err, "BadRequest"); err != nil {
 			return err
 		}
 
@@ -10404,7 +10404,7 @@ func PutBucketVersioning_invalid_status(s *S3Conf) error {
 			},
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrMalformedXML)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrMalformedXML)); err != nil {
 			return err
 		}
 
@@ -10439,7 +10439,7 @@ func GetBucketVersioning_non_existing_bucket(s *S3Conf) error {
 			Bucket: getPtr(getBucketName()),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -10603,7 +10603,7 @@ func Versioning_CopyObject_non_existing_version_id(s *S3Conf) error {
 			CopySource: getPtr(fmt.Sprintf("%v/%v?versionId=invalid_versionId", bucket, srcObj)),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchVersion)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchVersion)); err != nil {
 			return err
 		}
 
@@ -10693,7 +10693,7 @@ func Versioning_HeadObject_invalid_versionId(s *S3Conf) error {
 			VersionId: getPtr("invalid_version_id"),
 		})
 		cancel()
-		if err := checkSdkApiErr(err, "BadRequest"); err != nil {
+		if err := checkSdkAPIErr(err, "BadRequest"); err != nil {
 			return err
 		}
 		return nil
@@ -10709,7 +10709,7 @@ func DeleteObject_name_too_long(s *S3Conf) error {
 			Key:    getPtr(genRandString(300)),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrKeyTooLong)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrKeyTooLong)); err != nil {
 			return err
 		}
 		return nil
@@ -10785,7 +10785,7 @@ func Versioning_HeadObject_delete_marker(s *S3Conf) error {
 			VersionId: out.VersionId,
 		})
 		cancel()
-		if err := checkSdkApiErr(err, "MethodNotAllowed"); err != nil {
+		if err := checkSdkAPIErr(err, "MethodNotAllowed"); err != nil {
 			return err
 		}
 
@@ -10813,7 +10813,7 @@ func Versioning_GetObject_invalid_versionId(s *S3Conf) error {
 			VersionId: getPtr("invalid_version_id"),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidVersionId)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidVersionID)); err != nil {
 			return err
 		}
 
@@ -10931,7 +10931,7 @@ func Versioning_GetObject_delete_marker(s *S3Conf) error {
 			VersionId: out.VersionId,
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrMethodNotAllowed)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrMethodNotAllowed)); err != nil {
 			return err
 		}
 
@@ -10952,8 +10952,8 @@ func Versioning_DeleteObject_delete_object_version(s *S3Conf) error {
 			return err
 		}
 
-		versionId := r.res.VersionId
-		if versionId == nil || *versionId == "" {
+		versionID := r.res.VersionId
+		if versionID == nil || *versionID == "" {
 			return fmt.Errorf("expected non empty versionId")
 		}
 
@@ -10966,15 +10966,15 @@ func Versioning_DeleteObject_delete_object_version(s *S3Conf) error {
 		out, err := s3client.DeleteObject(ctx, &s3.DeleteObjectInput{
 			Bucket:    &bucket,
 			Key:       &obj,
-			VersionId: versionId,
+			VersionId: versionID,
 		})
 		cancel()
 		if err != nil {
 			return err
 		}
 
-		if *out.VersionId != *versionId {
-			return fmt.Errorf("expected deleted object versionId to be %v, instead got %v", *versionId, *out.VersionId)
+		if *out.VersionId != *versionID {
+			return fmt.Errorf("expected deleted object versionId to be %v, instead got %v", *versionID, *out.VersionId)
 		}
 
 		return nil
@@ -11003,7 +11003,7 @@ func Versioning_DeleteObject_non_existing_object(s *S3Conf) error {
 			VersionId: getPtr("non_existing_version_id"),
 		})
 		canel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrInvalidVersionId)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrInvalidVersionID)); err != nil {
 			return err
 		}
 
@@ -11269,7 +11269,7 @@ func ListObjectVersions_non_existing_bucket(s *S3Conf) error {
 			Bucket: getPtr(getBucketName()),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchBucket)); err != nil {
 			return err
 		}
 
@@ -11664,7 +11664,7 @@ func Versioning_UploadPartCopy_non_existing_versionId(s *S3Conf) error {
 			CopySource: getPtr(fmt.Sprintf("%v/%v?versionId=invalid_versionId", bucket, srcObj)),
 		})
 		cancel()
-		if err := checkApiErr(err, s3err.GetAPIError(s3err.ErrNoSuchVersion)); err != nil {
+		if err := checkAPIErr(err, s3err.GetAPIError(s3err.ErrNoSuchVersion)); err != nil {
 			return err
 		}
 

@@ -123,7 +123,7 @@ func ValidatePolicyDocument(policyBin []byte, bucket string, iam IAMService) err
 
 	if len(policy.Statement) == 0 {
 		//lint:ignore ST1005 Reason: This error message is intended for end-user clarity and follows their expectations
-		return getMalformedPolicyError(errors.New("Could not parse the policy: Statement is empty!"))
+		return getMalformedPolicyError(errors.New("could not parse the policy: statement is empty"))
 	}
 
 	if err := policy.Validate(bucket, iam); err != nil {

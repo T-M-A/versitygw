@@ -118,13 +118,13 @@ func ParseCopySource(copySourceHeader string) (string, string, string, error) {
 
 	cSplitted := strings.Split(copySourceHeader, "?")
 	copySource := cSplitted[0]
-	var versionId string
+	var versionID string
 	if len(cSplitted) > 1 {
-		versionIdParts := strings.Split(cSplitted[1], "=")
-		if len(versionIdParts) != 2 || versionIdParts[0] != "versionId" {
+		versionIDParts := strings.Split(cSplitted[1], "=")
+		if len(versionIDParts) != 2 || versionIDParts[0] != "versionId" {
 			return "", "", "", s3err.GetAPIError(s3err.ErrInvalidRequest)
 		}
-		versionId = versionIdParts[1]
+		versionID = versionIDParts[1]
 	}
 
 	srcBucket, srcObject, ok := strings.Cut(copySource, "/")
@@ -132,7 +132,7 @@ func ParseCopySource(copySourceHeader string) (string, string, string, error) {
 		return "", "", "", s3err.GetAPIError(s3err.ErrInvalidCopySource)
 	}
 
-	return srcBucket, srcObject, versionId, nil
+	return srcBucket, srcObject, versionID, nil
 }
 
 func CreateExceedingRangeErr(objSize int64) s3err.APIError {

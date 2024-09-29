@@ -229,19 +229,19 @@ func parseVaultUserAccount(data map[string]interface{}, access string) (acc Acco
 	if !ok {
 		return acc, errInvalidUser
 	}
-	userIdJson, ok := usrAcc["userID"].(json.Number)
+	userIDJson, ok := usrAcc["userID"].(json.Number)
 	if !ok {
 		return acc, errInvalidUser
 	}
-	userId, err := userIdJson.Int64()
+	userID, err := userIDJson.Int64()
 	if err != nil {
 		return acc, errInvalidUser
 	}
-	groupIdJson, ok := usrAcc["groupID"].(json.Number)
+	groupIDJson, ok := usrAcc["groupID"].(json.Number)
 	if !ok {
 		return acc, errInvalidUser
 	}
-	groupId, err := groupIdJson.Int64()
+	groupID, err := groupIDJson.Int64()
 	if err != nil {
 		return acc, errInvalidUser
 	}
@@ -250,7 +250,7 @@ func parseVaultUserAccount(data map[string]interface{}, access string) (acc Acco
 		Access:  acss,
 		Secret:  secret,
 		Role:    Role(role),
-		UserID:  int(userId),
-		GroupID: int(groupId),
+		UserID:  int(userID),
+		GroupID: int(groupID),
 	}, nil
 }

@@ -38,12 +38,12 @@ type Grantee struct {
 	Type       types.Type
 }
 
-type GetBucketAclOutput struct {
+type GetBucketACLOutput struct {
 	Owner             *types.Owner
 	AccessControlList AccessControlList
 }
 
-type PutBucketAclInput struct {
+type PutBucketACLInput struct {
 	Bucket              *string
 	ACL                 types.BucketCannedACL
 	AccessControlPolicy *AccessControlPolicy
@@ -87,10 +87,10 @@ func ParseACL(data []byte) (ACL, error) {
 	return acl, nil
 }
 
-func ParseACLOutput(data []byte) (GetBucketAclOutput, error) {
+func ParseACLOutput(data []byte) (GetBucketACLOutput, error) {
 	var acl ACL
 	if err := json.Unmarshal(data, &acl); err != nil {
-		return GetBucketAclOutput{}, fmt.Errorf("parse acl: %w", err)
+		return GetBucketACLOutput{}, fmt.Errorf("parse acl: %w", err)
 	}
 
 	grants := []Grant{}
@@ -108,7 +108,7 @@ func ParseACLOutput(data []byte) (GetBucketAclOutput, error) {
 		})
 	}
 
-	return GetBucketAclOutput{
+	return GetBucketACLOutput{
 		Owner: &types.Owner{
 			ID: &acl.Owner,
 		},
@@ -118,7 +118,7 @@ func ParseACLOutput(data []byte) (GetBucketAclOutput, error) {
 	}, nil
 }
 
-func UpdateACL(input *PutBucketAclInput, acl ACL, iam IAMService, isAdmin bool) ([]byte, error) {
+func UpdateACL(input *PutBucketACLInput, acl ACL, iam IAMService, isAdmin bool) ([]byte, error) {
 	if input == nil {
 		return nil, s3err.GetAPIError(s3err.ErrInvalidRequest)
 	}
@@ -352,8 +352,8 @@ func IsAdminOrOwner(acct Account, isRoot bool, acl ACL) error {
 }
 
 type AccessOptions struct {
-	Acl           ACL
-	AclPermission types.Permission
+	ACL           ACL
+	ACLPermission types.Permission
 	IsRoot        bool
 	Acc           Account
 	Bucket        string
@@ -364,7 +364,7 @@ type AccessOptions struct {
 
 func VerifyAccess(ctx context.Context, be backend.Backend, opts AccessOptions) error {
 	if opts.Readonly {
-		if opts.AclPermission == types.PermissionWrite || opts.AclPermission == types.PermissionWriteAcp {
+		if opts.ACLPermission == types.PermissionWrite || opts.ACLPermission == types.PermissionWriteAcp {
 			return s3err.GetAPIError(s3err.ErrAccessDenied)
 		}
 	}
@@ -384,7 +384,7 @@ func VerifyAccess(ctx context.Context, be backend.Backend, opts AccessOptions) e
 		return VerifyBucketPolicy(policy, opts.Acc.Access, opts.Bucket, opts.Object, opts.Action)
 	}
 
-	if err := verifyACL(opts.Acl, opts.Acc.Access, opts.AclPermission); err != nil {
+	if err := verifyACL(opts.ACL, opts.Acc.Access, opts.ACLPermission); err != nil {
 		return err
 	}
 
@@ -410,19 +410,19 @@ func VerifyObjectCopyAccess(ctx context.Context, be backend.Backend, copySource 
 	}
 
 	// Get source bucket ACL
-	srcBucketACLBytes, err := be.GetBucketAcl(ctx, &s3.GetBucketAclInput{Bucket: &srcBucket})
+	srcBucketACLBytes, err := be.GetBucketACL(ctx, &s3.GetBucketAclInput{Bucket: &srcBucket})
 	if err != nil {
 		return err
 	}
 
-	var srcBucketAcl ACL
-	if err := json.Unmarshal(srcBucketACLBytes, &srcBucketAcl); err != nil {
+	var srcBucketACL ACL
+	if err := json.Unmarshal(srcBucketACLBytes, &srcBucketACL); err != nil {
 		return err
 	}
 
 	if err := VerifyAccess(ctx, be, AccessOptions{
-		Acl:           srcBucketAcl,
-		AclPermission: types.PermissionRead,
+		ACL:           srcBucketACL,
+		ACLPermission: types.PermissionRead,
 		IsRoot:        opts.IsRoot,
 		Acc:           opts.Acc,
 		Bucket:        srcBucket,

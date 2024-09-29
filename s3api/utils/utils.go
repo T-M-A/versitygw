@@ -36,7 +36,7 @@ import (
 
 var (
 	bucketNameRegexp   = regexp.MustCompile(`^[a-z0-9][a-z0-9.-]+[a-z0-9]$`)
-	bucketNameIpRegexp = regexp.MustCompile(`^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$`)
+	bucketNameIPRegexp = regexp.MustCompile(`^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$`)
 )
 
 const (
@@ -59,7 +59,7 @@ func GetUserMetaData(headers *fasthttp.RequestHeader) (metadata map[string]strin
 	return
 }
 
-func createHttpRequestFromCtx(ctx *fiber.Ctx, signedHdrs []string, contentLength int64) (*http.Request, error) {
+func createHTTPRequestFromCtx(ctx *fiber.Ctx, signedHdrs []string, contentLength int64) (*http.Request, error) {
 	req := ctx.Request()
 	var body io.Reader
 	if IsBigDataAction(ctx) {
@@ -114,7 +114,7 @@ var (
 	}
 )
 
-func createPresignedHttpRequestFromCtx(ctx *fiber.Ctx, signedHdrs []string, contentLength int64) (*http.Request, error) {
+func createPresignedHTTPRequestFromCtx(ctx *fiber.Ctx, signedHdrs []string, contentLength int64) (*http.Request, error) {
 	req := ctx.Request()
 	var body io.Reader
 	if IsBigDataAction(ctx) {
@@ -206,7 +206,7 @@ func IsValidBucketName(bucket string) bool {
 		return false
 	}
 	// Checks not to be a valid IP address
-	if bucketNameIpRegexp.MatchString(bucket) {
+	if bucketNameIPRegexp.MatchString(bucket) {
 		return false
 	}
 	return true

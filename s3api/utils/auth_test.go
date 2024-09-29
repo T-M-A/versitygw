@@ -92,7 +92,7 @@ func Test_Client_UserAgent(t *testing.T) {
 	}
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		req, err := createHttpRequestFromCtx(c, signedHdrs, int64(c.Request().Header.ContentLength()))
+		req, err := createHTTPRequestFromCtx(c, signedHdrs, int64(c.Request().Header.ContentLength()))
 		if err != nil {
 			t.Fatal(err)
 		}
